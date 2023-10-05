@@ -21,7 +21,7 @@
  * @subpackage Autopublicate/includes
  * @author     Autopublícate® <contact@autopublicate.com>
  */
-class Autopublicate_Loader {
+class ap_loader {
 
 	/**
 	 * The array of actions registered with WordPress.

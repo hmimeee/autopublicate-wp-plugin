@@ -6,7 +6,7 @@ class Profile_Controller extends Base_Controller
     {
         $user = get_user_by('login', $username);
         if (!$user) {
-            return abort();
+            return ap_abort();
         }
         $title = $user->get('display_name');
 
@@ -14,7 +14,7 @@ class Profile_Controller extends Base_Controller
     }
 
     public function profile()
-    {
+    {        
         $title = 'Profile';
         $user = wp_get_current_user();
 

@@ -67,16 +67,13 @@ class Autopublicate_Public
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Autopublicate_Loader as all of the hooks are defined
+		 * defined in ap_loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Autopublicate_Loader will then create the relationship
+		 * The ap_loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/autopublicate-public.css', array(), $this->version, 'all');
-		wp_enqueue_style($this->plugin_name . '-plugin', plugin_dir_url(__FILE__) . 'css/autopublicate-plugin-public.css', array(), $this->version, 'all');
 	}
 
 	/**
@@ -90,16 +87,13 @@ class Autopublicate_Public
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in Autopublicate_Loader as all of the hooks are defined
+		 * defined in ap_loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The Autopublicate_Loader will then create the relationship
+		 * The ap_loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/autopublicate-public.js', array('jquery'), $this->version, false);
-		wp_enqueue_script($this->plugin_name . '-plugin', plugin_dir_url(__FILE__) . 'js/autopublicate-plugin-public.js', array('jquery'), $this->version, false);
 	}
 
 	/**
@@ -109,11 +103,11 @@ class Autopublicate_Public
 	 */
 	public function enqueue_services()
 	{
-		autopublicate_loader('public/services');
-		autopublicate_loader('public/controllers');
-		autopublicate_loader('public/routes');
+		ap_loader('public/services');
+		ap_loader('public/controllers');
+		ap_loader('public/routes');
 
 		//Initiate the route service
-		Route_Service::init();
+		Route_Service::init($this->plugin_name);
 	}
 }

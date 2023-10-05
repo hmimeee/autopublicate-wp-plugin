@@ -35,7 +35,7 @@ class Autopublicate {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Autopublicate_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      ap_loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -86,7 +86,7 @@ class Autopublicate {
 	 *
 	 * Include the following files that make up the plugin:
 	 *
-	 * - Autopublicate_Loader. Orchestrates the hooks of the plugin.
+	 * - ap_loader. Orchestrates the hooks of the plugin.
 	 * - Autopublicate_i18n. Defines internationalization functionality.
 	 * - Autopublicate_Admin. Defines all hooks for the admin area.
 	 * - Autopublicate_Public. Defines all hooks for the public side of the site.
@@ -122,7 +122,7 @@ class Autopublicate {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-autopublicate-public.php';
 
-		$this->loader = new Autopublicate_Loader();
+		$this->loader = new ap_loader();
 
 	}
 
@@ -200,7 +200,7 @@ class Autopublicate {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    Autopublicate_Loader    Orchestrates the hooks of the plugin.
+	 * @return    ap_loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;

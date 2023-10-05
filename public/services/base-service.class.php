@@ -8,7 +8,7 @@ class Base_Service
      *
      * @since    1.0.0
      * @access   protected
-     * @var      Autopublicate_Loader    $loader    Maintains and registers all hooks for the plugin.
+     * @var      ap_loader    $loader    Maintains and registers all hooks for the plugin.
      */
     protected $loader;
 
@@ -20,7 +20,7 @@ class Base_Service
          */
         require_once plugin_dir_path(dirname(__DIR__)) . 'includes/class-autopublicate-loader.php';
 
-        $this->loader = new Autopublicate_Loader();
+        $this->loader = new ap_loader();
     }
 
     /**
