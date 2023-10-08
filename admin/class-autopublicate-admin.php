@@ -145,7 +145,6 @@ class Autopublicate_Admin
 			'read',
 			'settings',
 			array('Autopublicate_Admin', 'route'),
-			plugin_dir_url(__FILE__) . 'img/icon.png',
 			1
 		);
 	}

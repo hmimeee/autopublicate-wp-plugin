@@ -63,6 +63,7 @@ if (!function_exists('ap_route')) {
         $route = $routes[$name] ?? null;
         $query = null;
         $uri = '/';
+        $params = $params ?? '';
 
         if ($route) {
 

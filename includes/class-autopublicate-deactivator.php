@@ -20,7 +20,8 @@
  * @subpackage Autopublicate/includes
  * @author     Autopublícate® <contact@autopublicate.com>
  */
-class Autopublicate_Deactivator {
+class Autopublicate_Deactivator
+{
 
 	/**
 	 * Short Description. (use period)
@@ -29,8 +30,20 @@ class Autopublicate_Deactivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function deactivate() {
+	public static function deactivate()
+	{
+		global $wpdb; // the wordpress database object
 
+		$sql = $wpdb->prepare("
+			ALTER TABLE %1s
+			DROP COLUMN country,
+			DROP COLUMN profession_title,
+			DROP COLUMN languages,
+			DROP COLUMN about,
+			DROP COLUMN skills;
+		", $wpdb->prefix . 'users');
+
+		// run the query
+		$wpdb->query($sql);
 	}
-
 }

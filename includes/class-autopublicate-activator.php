@@ -20,7 +20,8 @@
  * @subpackage Autopublicate/includes
  * @author     Autopublícate® <contact@autopublicate.com>
  */
-class Autopublicate_Activator {
+class Autopublicate_Activator
+{
 
 	/**
 	 * Short Description. (use period)
@@ -29,8 +30,20 @@ class Autopublicate_Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
+	public static function activate()
+	{
+		global $wpdb; // the wordpress database object
 
+		$sql = $wpdb->prepare("
+			ALTER TABLE %1s
+			ADD profession_title varchar(255) NULL,
+			ADD country varchar(255) NULL,
+			ADD languages varchar(255) NULL,
+			ADD skills varchar(255) NULL,
+			ADD about LONGTEXT NULL;
+		", $wpdb->prefix . 'users');
+
+		// run the query
+		$wpdb->query($sql);
 	}
-
 }

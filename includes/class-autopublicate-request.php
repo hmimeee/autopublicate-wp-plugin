@@ -106,4 +106,11 @@ class Autopublicate_Request
             'message' => $message
         ];
     }
+
+    public function only(...$params)
+    {
+        return array_filter($this->data, function ($dt) use ($params) {
+            return in_array($dt, array_keys($params));
+        });
+    }
 }

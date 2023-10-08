@@ -4,6 +4,8 @@ class AP_Route_Service
 {
     protected $uri;
 
+    protected $method;
+
     public static function init($plugin_name)
     {
         //Route preparing
@@ -71,7 +73,7 @@ class AP_Route_Service
     public function name($name)
     {
         $routes = wp_cache_get('routes') ?  wp_cache_get('routes') : [];
-        $filter = array_filter($routes, fn ($dt) => $dt['uri'] == $this->uri);
+        $filter = array_filter($routes, fn ($dt) => $dt['uri'] == $this->uri && $dt['method'] == $this->method);
         $route = reset($filter);
 
         if (!$route) {
@@ -98,6 +100,7 @@ class AP_Route_Service
         $object = new self;
         $object->add_route($uri, $class, $function);
         $object->uri = $uri;
+        $object->method = 'GET';
 
         return $object;
     }
@@ -109,6 +112,10 @@ class AP_Route_Service
 
         $object = new self;
         $object->add_route($uri, $class, $function, 'POST');
+        $object->uri = $uri;
+        $object->method = 'POST';
+
+        return $object;
     }
 
     public static function put($uri, $params)
@@ -118,6 +125,10 @@ class AP_Route_Service
 
         $object = new self;
         $object->add_route($uri, $class, $function, 'PUT');
+        $object->uri = $uri;
+        $object->method = 'PUT';
+
+        return $object;
     }
 
     public static function delete($uri, $params)
@@ -127,6 +138,10 @@ class AP_Route_Service
 
         $object = new self;
         $object->add_route($uri, $class, $function, 'DELETE');
+        $object->uri = $uri;
+        $object->method = 'DELETE';
+
+        return $object;
     }
 
     public static function patch($uri, $params)
@@ -136,6 +151,10 @@ class AP_Route_Service
 
         $object = new self;
         $object->add_route($uri, $class, $function, 'PATCH');
+        $object->uri = $uri;
+        $object->method = 'GET';
+
+        return $object;
     }
 
     public static function any($uri, $params)
@@ -145,5 +164,7 @@ class AP_Route_Service
 
         $object = new self;
         $object->add_route($uri, $class, $function, null);
+
+        return $object;
     }
 }
