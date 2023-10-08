@@ -103,11 +103,13 @@ class Autopublicate_Public
 	 */
 	public function enqueue_services()
 	{
-		ap_loader('public/services');
-		ap_loader('public/controllers');
-		ap_loader('public/routes');
+		if (!strpos($_SERVER['REQUEST_URI'], 'wp-admin')) {
+			ap_loader('public/services');
+			ap_loader('public/controllers');
+			ap_loader('public/routes');
 
-		//Initiate the route service
-		Route_Service::init($this->plugin_name);
+			//Initiate the route service
+			AP_Route_Service::init($this->plugin_name);
+		}
 	}
 }

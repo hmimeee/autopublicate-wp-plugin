@@ -112,6 +112,11 @@ class Autopublicate {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-autopublicate-i18n.php';
 
 		/**
+		 * The class responsible for handling all request data.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-autopublicate-request.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-autopublicate-admin.php';
@@ -156,7 +161,8 @@ class Autopublicate {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-
+		$this->loader->add_action('init', $plugin_admin, 'enqueue_files');
+		$this->loader->add_action('admin_menu', $plugin_admin, 'admin_menu');
 	}
 
 	/**

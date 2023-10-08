@@ -20,7 +20,8 @@
  * @subpackage Autopublicate/admin
  * @author     Autopublícate® <contact@autopublicate.com>
  */
-class Autopublicate_Admin {
+class Autopublicate_Admin
+{
 
 	/**
 	 * The ID of this plugin.
@@ -47,11 +48,11 @@ class Autopublicate_Admin {
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct($plugin_name, $version)
+	{
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
 	}
 
 	/**
@@ -59,7 +60,8 @@ class Autopublicate_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles()
+	{
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -73,7 +75,7 @@ class Autopublicate_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/autopublicate-admin.css', array(), $this->version, 'all' );
+		// wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/autopublicate-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -82,7 +84,8 @@ class Autopublicate_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts()
+	{
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -96,8 +99,59 @@ class Autopublicate_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/autopublicate-admin.js', array( 'jquery' ), $this->version, false );
+		// wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/autopublicate-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
 
+	/**
+	 * This function is provided for demonstration purposes only.
+	 * 
+	 * This function will include all the files inside the admin folder
+	 * for admin panel actions.
+	 */
+	public function enqueue_files()
+	{
+		/**
+		 * These classes are responsible for admin panel controlling
+		 * core plugin.
+		 */
+		if (strpos($_SERVER['REQUEST_URI'], 'wp-admin')) {
+			ap_loader('admin/controllers');
+			ap_loader('admin/services');
+		}
+	}
+
+	/**
+	 * This function is provided for demonstration purposes only.
+	 * 
+	 * This function will add admin main menu for the Plugin
+	 */
+	public function admin_menu()
+	{
+		add_menu_page(
+			'Autopublícate® - Dashboard',
+			'Autopublícate®',
+			'read',
+			'autopublicate',
+			array('Autopublicate_Admin', 'route'),
+			plugin_dir_url(__FILE__) . 'img/icon.png',
+			20
+		);
+
+		add_submenu_page(
+			'autopublicate',
+			'Autopublícate® - Settings',
+			'Settings',
+			'read',
+			'settings',
+			array('Autopublicate_Admin', 'route'),
+			plugin_dir_url(__FILE__) . 'img/icon.png',
+			1
+		);
+	}
+
+	public static function route()
+	{
+		require_once __DIR__ . '/routes/web.php';
+	}
 }

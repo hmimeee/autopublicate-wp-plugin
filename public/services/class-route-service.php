@@ -1,6 +1,6 @@
 <?php
 
-class Route_Service
+class AP_Route_Service
 {
     protected $uri;
 

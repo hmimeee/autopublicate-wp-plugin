@@ -1,6 +1,6 @@
 <?php
 
-class Base_Service
+class AP_Base_Service
 {
     /**
      * The loader that's responsible for maintaining and registering all hooks that power

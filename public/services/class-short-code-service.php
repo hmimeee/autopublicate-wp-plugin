@@ -1,6 +1,6 @@
 <?php
 
-class Short_Code_Service extends Base_Service
+class AP_Short_Code_Service extends AP_Base_Service
 {
 	public static function init()
 	{

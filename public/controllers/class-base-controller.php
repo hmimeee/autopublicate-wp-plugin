@@ -1,6 +1,6 @@
 <?php
 
-class Base_Controller
+class AP_Base_Controller
 {
     public function view($file, $params = [])
     {
