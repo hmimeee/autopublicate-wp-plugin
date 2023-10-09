@@ -24,10 +24,11 @@ class AP_Base_Controller
                 global $current_user;
                 wp_get_current_user();
                 $params['current_user'] = $current_user;
+                $params['_layout'] = $this->layout;
                 $params['_page'] = $file;
                 $params['_current_url'] = home_url($wp->request);
 
-                ap_file_loader('public/views/layouts/' . $this->layout . '.php', $params);
+                ap_file_loader('public/views/layouts/main.php', $params);
             } catch (Throwable $th) {
                 if ($th->getCode() == 404) {
                     echo 'View not found';
