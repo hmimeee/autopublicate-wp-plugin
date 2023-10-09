@@ -2,6 +2,8 @@
 
 class AP_Route_Service
 {
+    protected $routes;
+
     protected $uri;
 
     protected $method;
@@ -24,7 +26,7 @@ class AP_Route_Service
 
                 $params = [];
                 foreach (array_keys($parts, '', true) as $i => $index) {
-                    if (isset($variables[$i])) {                        
+                    if (isset($variables[$i])) {
                         $params[$variables[$i]] = $uri_parts[$index];
                     }
                     $parts[$index] = $uri_parts[$index];
@@ -37,6 +39,11 @@ class AP_Route_Service
                 $current_route = $route;
 
                 if ($route['parsed_uri'] == implode('/', $uri_parts) && $route['method'] == $_SERVER['REQUEST_METHOD']) {
+                    if (($route['auth'] && !get_current_user_id())) {
+                        wp_redirect(wp_login_url());
+                        exit;
+                    }
+
                     wp_enqueue_style($plugin_name . '-plugin', plugin_dir_url(__DIR__) . 'css/autopublicate-plugin-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
                     wp_enqueue_style($plugin_name, plugin_dir_url(__DIR__) . 'css/autopublicate-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
 
@@ -65,12 +72,45 @@ class AP_Route_Service
             'params' => $params,
             'class' => $class,
             'function' => $function,
-            'method' => $method
+            'method' => $method,
+            'auth' => false
         ];
         wp_cache_set('routes', $routes);
     }
 
     public function name($name)
+    {
+        $routes = wp_cache_get('routes');
+        $filter = $this->route(true);
+        $route = reset($filter);
+        $keys = array_keys($filter);
+        $index = reset($keys);
+
+        unset($routes[$index]);
+        $routes[$name] = $route;
+
+        wp_cache_set('routes', $routes);
+
+        return $this;
+    }
+
+    public function auth()
+    {
+        $routes = wp_cache_get('routes');
+        $filter = $this->route(true);
+        $route = reset($filter);
+        $keys = array_keys($filter);
+        $key = reset($keys);
+
+        $route['auth'] = true;
+        $routes[$key] = $route;
+
+        wp_cache_set('routes', $routes);
+
+        return $this;
+    }
+
+    private function route($withKey = false)
     {
         $routes = wp_cache_get('routes') ?  wp_cache_get('routes') : [];
         $filter = array_filter($routes, fn ($dt) => $dt['uri'] == $this->uri && $dt['method'] == $this->method);
@@ -81,15 +121,7 @@ class AP_Route_Service
             exit;
         }
 
-        $keys = array_keys($filter);
-        $index = reset($keys);
-
-        unset($routes[$index]);
-        $routes[$name] = $route;
-
-        wp_cache_set('routes', $routes);
-
-        return $this;
+        return $withKey ? $filter : $route;
     }
 
     public static function get($uri, $params)

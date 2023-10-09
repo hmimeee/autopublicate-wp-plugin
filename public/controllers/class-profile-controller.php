@@ -65,6 +65,6 @@ class AP_Profile_Controller extends AP_Base_Controller
             ['ID' => get_current_user_id()]
         );
 
-        return $this->redirectWith(ap_route('profile.edit'), 'success', 'Profile updated successfully');
+        return $this->redirectWith(ap_route('profile'), 'success', 'Profile updated successfully');
     }
 }

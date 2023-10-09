@@ -24,16 +24,16 @@
 
                 <ul class="list-group text-left">
                     <li class="list-group-item d-flex justify-content-between">
-                        <div><i class="fa fa-map-marker me-2"></i> Location:</div> <b><?= $user->get('country') ?></b>
+                        <div><i class="fa fa-map-marker me-2"></i> Location:</div> <b><?= $user->get('country') ?? 'N/A' ?></b>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <div><i class="fa fa-user me-2"></i> Member since:</div> <b><?= date('M Y', strtotime($user->get('user_registered'))) ?></b>
                     </li>
                 </ul>
 
-                <hr />
-
                 <?php if ($user->get('ID') == get_current_user_id()) : ?>
+                    <hr />
+
                     <ul class="my-detail-footer">
                         <?php if ($_current_url != ap_route('profile.edit')) : ?>
                             <li><a class="bg-primary" title="Edit" href="<?= ap_route('profile.edit') ?>"><i class="fa fa-pen"></i></a></li>
@@ -48,9 +48,9 @@
                 <div class="my-detail">
                     <h6>Languages</h6>
                     <ul class="list-group list-group-flush">
-                    <?php foreach (explode(',', $user->get('languages')) as $language) : ?>
-                        <li class="list-group-item"><i class="fa fa-angle-right"></i> <?= $language ?></li>
-                    <?php endforeach ?>
+                        <?php foreach (explode(',', $user->get('languages')) as $language) : ?>
+                            <li class="list-group-item"><i class="fa fa-angle-right"></i> <?= $language ?></li>
+                        <?php endforeach ?>
                     </ul>
                 </div>
             <?php endif ?>

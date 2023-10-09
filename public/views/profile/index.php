@@ -5,7 +5,7 @@
 
 <div class="content-page">
   <div class="ps-4 pe-4">
-    <?= htmlspecialchars_decode($user->get('about')) ?>
+    <?= $user->get('about') ? htmlspecialchars_decode($user->get('about')) : 'N/A' ?>
   </div>
 
   <div class="text-center mt-5 bg-pattern">
