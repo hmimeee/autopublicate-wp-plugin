@@ -115,7 +115,7 @@ if (!function_exists('request')) {
      * 
      * @param mixed|null $key Key name of the request query to get or set the value
      * @param mixed|null $value Value of the key to set in the request
-     * @return \Autopublicate_Request
+     * @return \Autopublicate_Request|mixed
      */
     function request($key = null, $value = null)
     {

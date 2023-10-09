@@ -66,11 +66,11 @@
     </div>
 </div>
 
-<script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+<script src="<?= str_replace('/views', '', plugin_dir_url(__DIR__)) . 'js/ckeditor.js' ?>"></script>
 <script>
-	ClassicEditor
-		.create( document.querySelector( '#editor') )
-		.catch( error => {
-			console.error( error );
-		} );
+    ClassicEditor
+        .create(document.querySelector('#editor'))
+        .catch(error => {
+            console.error(error);
+        });
 </script>

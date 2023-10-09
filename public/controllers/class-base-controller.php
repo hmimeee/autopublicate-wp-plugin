@@ -55,9 +55,8 @@ class AP_Base_Controller
 
     public function redirectWith($uri = '/', $message = 'Request processed successfully', $status = 'success')
     {
-        session_start();
-        $_SESSION[$status . '_message'] = __($message);
+        $redirect = add_query_arg( $status . '_message', __($message), $uri );
 
-        $this->redirect($uri);
+        $this->redirect($redirect);
     }
 }

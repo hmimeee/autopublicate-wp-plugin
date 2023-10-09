@@ -43,6 +43,15 @@ class AP_Profile_Controller extends AP_Base_Controller
             return $this->redirectWith(ap_route('profile.edit'), 'Invalid request sent', 'error');
         }
 
+        if (!request('name')) {
+            return $this->redirectWith(ap_route('profile.edit'), 'Full name field is required', 'error');
+        }
+
+        if (!is_email(request('email'))) {
+            return $this->redirectWith(ap_route('profile.edit'), 'Invalid email address', 'error');
+        }
+
+
         $data = [
             'display_name' => request('name'),
             'user_nicename' => request('nickname'),
@@ -54,6 +63,12 @@ class AP_Profile_Controller extends AP_Base_Controller
         ];
 
         if (request('email') != $user->get('user_email')) {
+            $exists = get_user_by('email', request('email'));
+
+            if ($exists->get('ID') != get_current_user_id()) {
+                return $this->redirectWith(ap_route('profile.edit'), 'The email address is already associated with an user', 'error');
+            }
+
             $data['user_email'] = request('email');
             $data['user_status'] = 0;
         }
@@ -65,6 +80,6 @@ class AP_Profile_Controller extends AP_Base_Controller
             ['ID' => get_current_user_id()]
         );
 
-        return $this->redirectWith(ap_route('profile'), 'success', 'Profile updated successfully');
+        return $this->redirectWith(ap_route('profile'), 'Profile updated successfully');
     }
 }

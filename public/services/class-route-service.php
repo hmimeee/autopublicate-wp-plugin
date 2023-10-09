@@ -43,7 +43,7 @@ class AP_Route_Service
                         wp_redirect(wp_login_url());
                         exit;
                     }
-
+                    
                     wp_enqueue_style($plugin_name . '-plugin', plugin_dir_url(__DIR__) . 'css/autopublicate-plugin-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
                     wp_enqueue_style($plugin_name, plugin_dir_url(__DIR__) . 'css/autopublicate-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
 
