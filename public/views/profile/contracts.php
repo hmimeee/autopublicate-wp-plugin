@@ -1,0 +1,7 @@
+<div class="sub-title">
+    <h2>Contracts</h2>
+</div>
+
+<div class="content-page">
+    Contracts Here
+</div>

@@ -7,3 +7,6 @@ Route::get('profile', [AP_Profile_Controller::class, 'profile'])->name('profile.
 Route::get('profile/{user}', [AP_Profile_Controller::class, 'index'])->name('user_profile');
 Route::get('profile-edit', [AP_Profile_Controller::class, 'edit'])->name('profile.edit');
 Route::post('profile-edit', [AP_Profile_Controller::class, 'update'])->name('profile.update');
+Route::post('profile/contracts', [AP_Profile_Controller::class, 'contracts'])->name('profile.contracts');
+
+Route::get('contracts', [AP_Contracts_Controller::class, 'index'])->name('contracts.index');

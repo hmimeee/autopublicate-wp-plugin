@@ -82,4 +82,11 @@ class AP_Profile_Controller extends AP_Base_Controller
 
         return $this->redirectWith(ap_route('profile'), 'Profile updated successfully');
     }
+
+    public function contracts() {
+        $title = 'Contracts';
+        $user = wp_get_current_user();
+
+        return $this->view('profile/contracts', compact('user', 'title'));
+    }
 }

@@ -11,7 +11,7 @@
             <?php endif;
             unset($_GET['error_message']); ?>
 
-            <?php include_once($_layout . '.php') ?>
+            <?php file_exists(__DIR__ . '/' . $_layout . '.php') ? include_once($_layout . '.php') : include_once(plugin_dir_path(__DIR__) . $_page . '.php') ?>
         </div>
     </div>
 </main>

@@ -11,3 +11,4 @@
   <div class="text-center mt-5 bg-pattern">
     <a href="#" class="btn btn-outline-primary btn-circle btn-dashed-outline-primary">Hire</a>
   </div>
+</div>
