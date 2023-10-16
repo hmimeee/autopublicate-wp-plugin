@@ -45,5 +45,25 @@ class Autopublicate_Activator
 
 		// run the query
 		$wpdb->query($sql);
+
+		$sql = $wpdb->prepare("
+		CREATE TABLE %1s (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			provider_id BIGINT UNSIGNED NOT NULL,
+			buyer_id BIGINT UNSIGNED NOT NULL,
+			title varchar(255) NOT NULL,
+			description longtext NULL,
+			expected_deadline date NULL,
+			budget_type varchar(255) NULL,
+			budget decimal(10,4) NOT NULL,
+			final_budget decimal(10,4) NOT NULL DEFAULT 0,
+			status enum('pending', 'approved', 'delivered', 'completed', 'cleared') NOT NULL DEFAULT 'pending',
+
+			FOREIGN KEY (provider_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE
+			)
+		", $wpdb->prefix . 'ap_contracts');
+
+		// run the query
+		$wpdb->query($sql);
 	}
 }

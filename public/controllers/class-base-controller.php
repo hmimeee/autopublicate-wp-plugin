@@ -2,7 +2,17 @@
 
 class AP_Base_Controller
 {
-    public $layout = 'account';
+    public $layout;
+
+    public $user;
+
+    public $wpdb;
+
+    public function __construct()
+    {
+        global $wpdb;
+        $this->wpdb = $wpdb;
+    }
 
     public function view($file, $params = [])
     {
@@ -20,11 +30,8 @@ class AP_Base_Controller
                 global $current_route;
                 $params['current_route'] = $current_route;
 
-                //Set the current user data in a variable for the view
-                global $current_user;
-                wp_get_current_user();
-                $params['current_user'] = $current_user;
                 $params['_layout'] = $this->layout;
+                $params['user'] = $this->user;
                 $params['_page'] = $file;
                 $params['_current_url'] = home_url($wp->request);
 

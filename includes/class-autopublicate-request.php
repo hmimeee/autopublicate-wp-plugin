@@ -2,15 +2,15 @@
 
 class Autopublicate_Request
 {
-    private static $data;
+    private $data;
 
     public function __construct()
     {
         $post = $_POST;
         $get = $_GET;
-        self::$data = array_merge($get, $post);
+        $this->data = array_merge($get, $post);
 
-        foreach (self::$data as $key => $value) {
+        foreach ($this->data as $key => $value) {
             $this->$key = $value;
         }
     }
@@ -36,12 +36,13 @@ class Autopublicate_Request
      * @param array $rule Variable must be array with associative rules
      * @return boolean
      */
-    public static function validate($rules)
+    public function validate($rules)
     {
-        $data = self::$data;
+        $data = $this->data;
         $validate = true;
 
         foreach ($data as $index => $dt) {
+
 
             $has_rule = isset($rules[$index]) ? $rules[$index] : null;
             if (!$has_rule)
@@ -70,6 +71,8 @@ class Autopublicate_Request
      */
     public static function checkValid($rule, $data, $key)
     {
+        $key = ucwords($key);
+
         if ($rule == 'numeric' && !is_numeric($data))
             return static::message(false, "$key must be an integer value");
 
@@ -79,13 +82,28 @@ class Autopublicate_Request
         $explode_rule = explode(':', $rule);
         if (count($explode_rule) > 1) {
 
-            $min = intval(end($explode_rule));
-            if (reset($explode_rule) == 'min' && intval($data) < $min)
-                return static::message(false, "$key should not be less than " . $min . " characters");
+            if (is_numeric($data)) {
+                $min = intval(end($explode_rule));
+                if (reset($explode_rule) == 'min' && intval($data) < $min)
+                    return static::message(false, "$key should not be less than " . $min . " characters");
 
-            $max = intval(end($explode_rule));
-            if (reset($explode_rule) == 'max' && intval($data) > $max)
-                return static::message(false, "$key should not be grater than " . $max . " characters");
+                $max = intval(end($explode_rule));
+                if (reset($explode_rule) == 'max' && intval($data) > $max)
+                    return static::message(false, "$key should not be grater than " . $max . " characters");
+            } else {
+                $min = intval(end($explode_rule));
+                if (reset($explode_rule) == 'min' && strlen($data) < $min)
+                    return static::message(false, "$key should not be less than " . $min . " characters");
+
+                $max = intval(end($explode_rule));
+                if (reset($explode_rule) == 'max' && strlen($data) > $max)
+                    return static::message(false, "$key should not be grater than " . $max . " characters");
+            }
+
+            if (reset($explode_rule) == 'date') {
+                $format = end($explode_rule);
+                if ($data != date($format, strtotime($data))) static::message(false, "$key field must have the date format '$format'");
+            }
         }
 
         $has_in = explode(':', $rule);
@@ -94,6 +112,10 @@ class Autopublicate_Request
 
             if (!in_array($data, $allowed_values))
                 return static::message(false, "$key allowed values are: " . end($has_in));
+        }
+
+        if ($rule == 'date') {
+            return $data == date('Y-m-d', strtotime($data));
         }
 
         return static::message(true, "Validated successfully");
@@ -109,8 +131,11 @@ class Autopublicate_Request
 
     public function only(...$params)
     {
-        return array_filter($this->data, function ($dt) use ($params) {
-            return in_array($dt, array_keys($params));
-        });
+        return array_intersect_key($this->data, array_flip($params));
+    }
+
+    public function all()
+    {
+        return $this->data;
     }
 }

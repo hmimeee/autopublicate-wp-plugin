@@ -9,6 +9,8 @@
   </div>
 
   <div class="text-center mt-5 bg-pattern">
-    <a href="#" class="btn btn-outline-primary btn-circle btn-dashed-outline-primary">Hire</a>
+    <?php if ($user->get('ID') != get_current_user_id()) : ?>
+      <a href="<?= ap_route('contracts.create', $user->get('user_login')) ?>" class="btn btn-outline-primary btn-circle btn-dashed-outline-primary">Hire</a>
+    <?php endif ?>
   </div>
 </div>

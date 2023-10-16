@@ -3,5 +3,7 @@
 </div>
 
 <div class="content-page">
-    Contracts Here
+    <div class="ps-4 pe-4">
+        Contracts Here
+    </div>
 </div>

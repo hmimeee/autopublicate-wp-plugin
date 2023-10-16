@@ -7,8 +7,11 @@
                 <div id="menu">
                     <ul class="menu-link">
                         <li><a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">About</a></li>
-                        <li><a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">Wallet</a></li>
-                        <li><a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">Contracts</a></li>
+
+                        <?php if ($user->get('ID') == get_current_user_id()) : ?>
+                            <li><a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">Wallet</a></li>
+                            <li><a href="<?= ap_route('profile.contracts') ?>">Contracts</a></li>
+                        <?php endif ?>
                     </ul>
                 </div>
             </div>

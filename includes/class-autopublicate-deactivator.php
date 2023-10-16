@@ -45,5 +45,12 @@ class Autopublicate_Deactivator
 
 		// run the query
 		$wpdb->query($sql);
+
+		$sql = $wpdb->prepare("
+		DROP TABLE %1s;
+		", $wpdb->prefix . 'ap_contracts');
+
+		// run the query
+		$wpdb->query($sql);
 	}
 }

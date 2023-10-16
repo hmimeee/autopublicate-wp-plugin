@@ -52,7 +52,6 @@ class AP_Route_Service
                     $object = new $route['class'];
                     extract($params);
                     call_user_func([$object, $route['function']], ...array_values($params));
-                    return true;
                 }
             });
         }
