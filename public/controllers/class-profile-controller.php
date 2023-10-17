@@ -57,7 +57,8 @@ class AP_Profile_Controller extends AP_Base_Controller
             'profession_title' => request('profession_title'),
             'skills' => request('skills'),
             'languages' => request('languages'),
-            'about' => htmlspecialchars(request('about'))
+            'professional_description' => request('professional_description') ? htmlspecialchars(request('professional_description')) : null,
+            'about' => request('about') ? strip_tags(request('about')) : null
         ];
 
         if (request('email') != $this->user->get('user_email')) {
@@ -81,7 +82,8 @@ class AP_Profile_Controller extends AP_Base_Controller
         return $this->redirectWith(ap_route('profile'), 'Profile updated successfully');
     }
 
-    public function contracts() {
+    public function contracts()
+    {
         $title = 'Contracts';
 
         return $this->view('profile/contracts', compact('title'));

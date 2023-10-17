@@ -11,6 +11,7 @@ Route::get('profile/contracts', [AP_Profile_Controller::class, 'contracts'])->na
 Route::get('profile/{user}', [AP_Profile_Controller::class, 'index'])->name('user_profile');
 Route::get('contracts/{user}/create', [AP_Contracts_Controller::class, 'create'])->name('contracts.create');
 Route::post('contracts/{user}/create', [AP_Contracts_Controller::class, 'store'])->name('contracts.store');
-Route::get('contracts/{user}/{contract}', [AP_Contracts_Controller::class, 'show'])->name('contracts.show');
+Route::get('contracts/{user}/{contract}/view', [AP_Contracts_Controller::class, 'show'])->name('contracts.show');
+Route::post('contracts/{user}/{contract}/modify', [AP_Contracts_Controller::class, 'modify'])->name('contracts.modify');
 
 Route::get('contracts', [AP_Contracts_Controller::class, 'index'])->name('contracts.index');

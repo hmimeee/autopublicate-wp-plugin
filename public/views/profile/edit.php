@@ -54,8 +54,13 @@
                 </div>
 
                 <div class="form-group col-md-12">
-                    <label for="name-field">About</label>
-                    <textarea id="editor" name="about"><?= $user->get('about') ?></textarea>
+                    <label for="about-field">About (300 characters)</label>
+                    <textarea name="about" maxlength="300" class="form-control" id="about-field" placeholder="Write short description about yourself" rows="4"><?= $user->get('about') ?></textarea>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label for="name-field">Professional Description</label>
+                    <textarea id="editor" name="professional_description"><?= $user->get('professional_description') ?></textarea>
                 </div>
 
                 <div class="form-group">

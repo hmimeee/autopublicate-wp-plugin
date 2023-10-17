@@ -41,6 +41,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
         $data = request()->only('title', 'description', 'expected_deadline', 'budget', 'budget_type');
         $data['provider_id'] = $provider->get('ID');
         $data['buyer_id'] = get_current_user_id();
+        $data['attachments'] = implode(',', request()->file('attachments')->save());
 
         $this->wpdb->insert(
             $this->wpdb->prefix . 'ap_contracts',
@@ -62,14 +63,44 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
         $provider_id = $provider->get('ID');
         $buyer_id = get_current_user_id();
-        
+
         $contract = $this->wpdb->get_row("SELECT * FROM {$this->wpdb->prefix}ap_contracts WHERE provider_id = $provider_id AND buyer_id = $buyer_id AND id = $contract", ARRAY_A);
         if (!$contract) {
             return ap_abort();
         }
 
+        $args = array(
+            'post__in' => explode(',', $contract['attachments']),
+            'post_type' => 'attachment',
+            'no_found_rows' => true,
+            'post_status' => 'any'
+        );
+        $query = new WP_Query($args);
+        $attachments = $query->get_posts();
+        $title = 'Contract: ' . $contract['title'];
         $this->user = $provider;
 
-        return $this->view('contracts/show', compact('contract'));
+        return $this->view('contracts/show', compact('contract', 'title'));
+    }
+
+    public function modify($user, $contractId)
+    {
+        $provider = get_user_by('login', $user);
+        if (!$provider) {
+            return ap_abort();
+        }
+
+        $provider_id = $provider->get('ID');
+        $buyer_id = get_current_user_id();
+        $contract = $this->wpdb->get_row("SELECT * FROM {$this->wpdb->prefix}ap_contracts WHERE provider_id = $provider_id AND buyer_id = $buyer_id AND id = $contractId", ARRAY_A);
+        if (!$contract) {
+            return ap_abort();
+        }
+
+        $deadline = request('deadline', $contract['expected_deadline']);
+        $budget = request('budget', $contract['budget']);
+        $this->wpdb->get_row("UPDATE {$this->wpdb->prefix}ap_contracts SET deadline = '$deadline', budget = '$budget', modified_by = '$buyer_id', status = 'modified' WHERE provider_id = $provider_id AND buyer_id = $buyer_id AND id = $contractId");
+
+        return $this->redirectWith(ap_route('contracts.show', ['user' => $user, 'contract' => $contractId]), 'Contract submitted as modified, please wait till other parties to approve');
     }
 }

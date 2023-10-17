@@ -40,7 +40,8 @@ class Autopublicate_Activator
 			ADD country varchar(255) NULL,
 			ADD languages varchar(255) NULL,
 			ADD skills varchar(255) NULL,
-			ADD about LONGTEXT NULL;
+			ADD professional_description longtext NULL,
+			ADD about TEXT NULL;
 		", $wpdb->prefix . 'users');
 
 		// run the query
@@ -54,12 +55,17 @@ class Autopublicate_Activator
 			title varchar(255) NOT NULL,
 			description longtext NULL,
 			expected_deadline date NULL,
+			deadline date NULL,
 			budget_type varchar(255) NULL,
 			budget decimal(10,4) NOT NULL,
 			final_budget decimal(10,4) NOT NULL DEFAULT 0,
-			status enum('pending', 'approved', 'delivered', 'completed', 'cleared') NOT NULL DEFAULT 'pending',
+			status enum('pending', 'modified', 'approved', 'delivered', 'completed', 'cleared') NOT NULL DEFAULT 'pending',
+			attachments varchar(255) NULL,
+			modified_by BIGINT UNSIGNED NULL,
 
-			FOREIGN KEY (provider_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE
+			FOREIGN KEY (provider_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE,
+			FOREIGN KEY (buyer_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE,
+			FOREIGN KEY (modified_by) REFERENCES {$wpdb->prefix}users (ID) ON DELETE SET NULL
 			)
 		", $wpdb->prefix . 'ap_contracts');
 

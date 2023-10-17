@@ -40,6 +40,8 @@ class Autopublicate_Deactivator
 			DROP COLUMN profession_title,
 			DROP COLUMN languages,
 			DROP COLUMN about,
+			DROP COLUMN professional_description,
+			DROP COLUMN attachments,
 			DROP COLUMN skills;
 		", $wpdb->prefix . 'users');
 

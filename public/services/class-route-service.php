@@ -47,6 +47,7 @@ class AP_Route_Service
                     wp_enqueue_style($plugin_name . '-plugin', plugin_dir_url(__DIR__) . 'css/autopublicate-plugin-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
                     wp_enqueue_style($plugin_name, plugin_dir_url(__DIR__) . 'css/autopublicate-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
 
+                    wp_enqueue_script($plugin_name . '-bootstrap-bundle', plugin_dir_url(__DIR__) . 'js/bootstrap.bundle.min.js', array('jquery'), AUTOPUBLICATE_VERSION, false);
                     wp_enqueue_script($plugin_name, plugin_dir_url(__DIR__) . 'js/autopublicate-public.js', array('jquery'), AUTOPUBLICATE_VERSION, false);
 
                     $object = new $route['class'];

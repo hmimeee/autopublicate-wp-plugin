@@ -21,6 +21,10 @@
                 <div class="white-spacing text-center">
                     <h1><?= $user->get('display_name') ?> <?= $user->get('user_nicename') ? '(' . $user->get('user_nicename') . ')' : '' ?></h1>
                     <span><?= $user->get('profession_title') ?></span>
+
+                    <?php if($user->get('about')): ?>
+                        <p class="text-wrap text-start mt-2"><?= $user->get('about') ?></p>
+                    <?php endif ?>
                 </div>
 
                 <hr />

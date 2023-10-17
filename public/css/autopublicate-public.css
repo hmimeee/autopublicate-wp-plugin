@@ -46,6 +46,21 @@ select.form-control {
     background: #ffffff !important;
 }
 
+.form-control:disabled {
+    border: 1px solid #ced4da;
+    box-shadow: none;
+}
+
+input[type=file].form-control {
+    border: 1px solid #666 !important;
+    background-color: transparent;
+}
+
+input[type=file].form-control::file-selector-button {
+    background-color: transparent;
+    padding-bottom: 18px;
+}
+
 label {
     line-height: 2 !important;
 }
@@ -289,7 +304,7 @@ label {
 }
 
 .my-detail .white-spacing {
-    padding: 23px 0;
+    padding: 10px 0;
 }
 
 .my-detail h1 {
@@ -457,7 +472,7 @@ tr>td:nth-child(2) {
 
 .form-control {
     border: 2px solid transparent;
-    height: 50px;
+    min-height: 50px;
     border-radius: 2px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
@@ -1047,6 +1062,34 @@ blockquote {
     }
 }
 
+.btn-secondary {
+    background-color: #6c757d !important;
+    color: #FFF !important;
+    border-radius: 5px;
+    border-color: white !important;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-radius: 5px;
+    border: 1px solid #6c757d !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-dashed-outline-secondary {
+    border: 1px dashed #6c757d !important;
+}
+
+.btn-close:hover, .btn-close {
+    padding: 1rem !important;
+    border: none !important;
+    background-color: transparent !important;
+}
+
 .btn-primary {
     background-color: #FF6C54 !important;
     color: #FFF !important;
@@ -1115,4 +1158,76 @@ blockquote {
   .alert {
     padding: 0.5rem 0.5rem;
     text-align: center;
+  }
+
+  #progressbar {
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+#progressbar li {
+    list-style-type: none;
+    color: #99a2a8;
+    font-size: 9px;
+    float: left;
+    position: relative;
+    text-align: center;
+    font-size: 12px;
+}
+
+#progressbar li:before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f111";
+    width: 50px;
+    height: 50px;
+    font-size: 25px;
+    line-height: 50px;
+    display: block;
+    background: #eaf0f4;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+}
+
+#progressbar li.active:before {
+    content: "\f00c";
+}
+
+#progressbar li.active+li:before {
+    content: "\f110";
+    background-color: #ffc107;
+    color: #fff;
+    animation: 3s linear infinite spinner;
+}
+
+#progressbar li.active+li:after {
+    background-color: #ffc107;
+}
+
+#progressbar li:after {
+    content: "";
+    width: 100%;
+    height: 10px;
+    background: #eaf0f4;
+    position: absolute;
+    left: -50%;
+    top: 21px;
+    z-index: -1;
+}
+
+#progressbar li:last-child:after {
+    width: 150%;
+}
+
+#progressbar li.active {
+    color: #5cb85c;
+}
+
+#progressbar li.active:before,
+#progressbar li.active:after {
+    background: #5cb85c;
+    color: white;
+}
+
+@keyframes spinner {
+    to { transform: rotate(360deg); }
   }
