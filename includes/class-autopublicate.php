@@ -100,6 +100,11 @@ class Autopublicate {
 	private function load_dependencies() {
 
 		/**
+		 * The file is responsible for autoloading third parties' packages
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'vendor/autoload.php';
+
+		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
@@ -126,6 +131,11 @@ class Autopublicate {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-autopublicate-public.php';
+
+		//Autoload files
+		ap_loader('includes/traits');
+		ap_file_loader('includes/class-autopublicate-query-builder.php');
+		ap_loader('includes/models');
 
 		$this->loader = new ap_loader();
 

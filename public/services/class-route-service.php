@@ -2,6 +2,8 @@
 
 class AP_Route_Service
 {
+    protected $instance;
+
     protected $routes;
 
     protected $uri;
@@ -43,7 +45,7 @@ class AP_Route_Service
                         wp_redirect(wp_login_url());
                         exit;
                     }
-                    
+
                     wp_enqueue_style($plugin_name . '-plugin', plugin_dir_url(__DIR__) . 'css/autopublicate-plugin-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
                     wp_enqueue_style($plugin_name, plugin_dir_url(__DIR__) . 'css/autopublicate-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
 
@@ -124,79 +126,92 @@ class AP_Route_Service
         return $withKey ? $filter : $route;
     }
 
-    public static function get($uri, $params)
+    public function _get($uri, $params)
     {
         $class = reset($params);
         $function = end($params);
 
-        $object = new self;
-        $object->add_route($uri, $class, $function);
-        $object->uri = $uri;
-        $object->method = 'GET';
+        $this->add_route($uri, $class, $function);
+        $this->uri = $uri;
+        $this->method = 'GET';
 
-        return $object;
+        return $this;
     }
 
-    public static function post($uri, $params)
+    public function _post($uri, $params)
     {
         $class = reset($params);
         $function = end($params);
 
-        $object = new self;
-        $object->add_route($uri, $class, $function, 'POST');
-        $object->uri = $uri;
-        $object->method = 'POST';
+        $this->add_route($uri, $class, $function, 'POST');
+        $this->uri = $uri;
+        $this->method = 'POST';
 
-        return $object;
+        return $this;
     }
 
-    public static function put($uri, $params)
+    public function _put($uri, $params)
     {
         $class = reset($params);
         $function = end($params);
 
-        $object = new self;
-        $object->add_route($uri, $class, $function, 'PUT');
-        $object->uri = $uri;
-        $object->method = 'PUT';
+        $this->add_route($uri, $class, $function, 'PUT');
+        $this->uri = $uri;
+        $this->method = 'PUT';
 
-        return $object;
+        return $this;
     }
 
-    public static function delete($uri, $params)
+    public function _delete($uri, $params)
     {
         $class = reset($params);
         $function = end($params);
 
-        $object = new self;
-        $object->add_route($uri, $class, $function, 'DELETE');
-        $object->uri = $uri;
-        $object->method = 'DELETE';
+        $this->add_route($uri, $class, $function, 'DELETE');
+        $this->uri = $uri;
+        $this->method = 'DELETE';
 
-        return $object;
+        return $this;
     }
 
-    public static function patch($uri, $params)
+    public function _patch($uri, $params)
     {
         $class = reset($params);
         $function = end($params);
 
-        $object = new self;
-        $object->add_route($uri, $class, $function, 'PATCH');
-        $object->uri = $uri;
-        $object->method = 'GET';
+        $this->add_route($uri, $class, $function, 'PATCH');
+        $this->uri = $uri;
+        $this->method = 'GET';
 
-        return $object;
+        return $this;
     }
 
-    public static function any($uri, $params)
+    public function _any($uri, $params)
     {
         $class = reset($params);
         $function = end($params);
 
-        $object = new self;
-        $object->add_route($uri, $class, $function, null);
+        $this->add_route($uri, $class, $function, null);
 
-        return $object;
+        return $this;
+    }
+
+    public function __call($method, $args)
+    {
+        return $this->call($method, $args);
+    }
+
+    public static function __callStatic($method, $args)
+    {
+        return (new static())->call($method, $args);
+    }
+
+    private function call($method, $args)
+    {
+        if (! method_exists($this , '_' . $method)) {
+            throw new Exception('Call undefined method ' . $method);
+        }
+
+        return $this->{'_' . $method}(...$args);
     }
 }

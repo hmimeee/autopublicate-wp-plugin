@@ -1,5 +1,7 @@
 <?php
 
+use ClanCats\Hydrahon\Query\Sql\Select;
+
 if (!function_exists('ap_loader')) {
     /**
      * Autoload all the files inside a path that is provided in the params
@@ -40,6 +42,7 @@ if (!function_exists('ap_file_loader')) {
     function ap_file_loader($filePath, $data = [])
     {
         if (!file_exists(plugin_dir_path(__FILE__) . trim($filePath, '/'))) {
+            dd(plugin_dir_path(__FILE__) . trim($filePath, '/'));
             throw new Exception('Invalid file', 404);
         }
 
@@ -119,7 +122,7 @@ if (!function_exists('request')) {
      */
     function request($key = null, $value = null)
     {
-        if ($key && $value)
+        if ($key && !isset($_GET[$key]))
             $_GET[$key] = $value;
 
         $request = new Autopublicate_Request;
@@ -249,5 +252,24 @@ if (!function_exists('session')) {
             return $_SESSION[$key];
 
         return false;
+    }
+}
+
+if (!function_exists('paginate')) {
+    function paginate(Select $query, $page = 1, $per_page = 15)
+    {
+        return [
+            'per_page' => $per_page,
+            'page' => $page,
+            'total_pages' => ceil((clone $query)->count() / $per_page),
+            'data' => $query->page($page - 1, $per_page)->get(),
+        ];
+    }
+}
+
+if (!function_exists('paginate_view')) {
+    function paginate_view($pagination)
+    {
+        ap_file_loader('public/views/layouts/sections/pagination.php', ['pagination' => $pagination]);
     }
 }

@@ -81,11 +81,4 @@ class AP_Profile_Controller extends AP_Base_Controller
 
         return $this->redirectWith(ap_route('profile'), 'Profile updated successfully');
     }
-
-    public function contracts()
-    {
-        $title = 'Contracts';
-
-        return $this->view('profile/contracts', compact('title'));
-    }
 }

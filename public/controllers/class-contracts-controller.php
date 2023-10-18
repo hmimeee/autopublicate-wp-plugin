@@ -5,8 +5,28 @@ class AP_Contracts_Controller extends AP_Base_Controller
     public function index()
     {
         $title = 'Contracts';
+        $user_id = get_current_user_id();
+        $type = request('contract', 'ongoing');
 
-        return $this->view('contracts/index', compact('title'));
+        $query = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id);
+
+        switch ($type) {
+            case 'delivered':
+                $query = $query->where('status', 'delivered');
+                break;
+
+            case 'completed':
+                $query = $query->whereNotIn('status', ['completed', 'cleared']);
+                break;
+
+            default:
+                $query = $query->whereNotIn('status', ['completed', 'cleared']);
+                break;
+        }
+
+        $contracts = paginate($query, request('page', 1));
+
+        return $this->view('contracts/index', compact('title', 'contracts'));
     }
 
     public function create($username)
@@ -54,31 +74,32 @@ class AP_Contracts_Controller extends AP_Base_Controller
         ]), 'Contract created successfully');
     }
 
-    public function show($user, $contract)
+    public function show($contract)
     {
-        $provider = get_user_by('login', $user);
-        if (!$provider) {
-            return ap_abort();
-        }
-
-        $provider_id = $provider->get('ID');
-        $buyer_id = get_current_user_id();
-
-        $contract = $this->wpdb->get_row("SELECT * FROM {$this->wpdb->prefix}ap_contracts WHERE provider_id = $provider_id AND buyer_id = $buyer_id AND id = $contract", ARRAY_A);
+        $attachments = [];
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::with('buyer', 'provider')->where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->find($contract);
         if (!$contract) {
             return ap_abort();
         }
 
-        $args = array(
-            'post__in' => explode(',', $contract['attachments']),
-            'post_type' => 'attachment',
-            'no_found_rows' => true,
-            'post_status' => 'any'
-        );
-        $query = new WP_Query($args);
-        $attachments = $query->get_posts();
+        if($contract['buyer_id'] == get_current_user_id()) {
+            $this->user = $contract['provider'];
+        } else {
+            $this->user = $contract['buyer'];
+        }
+
+        if ($contract['attachments']) {
+            $args = array(
+                'post__in' => explode(',', $contract['attachments']),
+                'post_type' => 'attachment',
+                'no_found_rows' => true,
+                'post_status' => 'any'
+            );
+            $query = new WP_Query($args);
+            $attachments = $query->get_posts();
+        }
         $title = 'Contract: ' . $contract['title'];
-        $this->user = $provider;
 
         return $this->view('contracts/show', compact('contract', 'title'));
     }

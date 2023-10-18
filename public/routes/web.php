@@ -4,14 +4,13 @@ use AP_Route_Service as Route;
 
 Route::get('mi-cuenta', [AP_Profile_Controller::class, 'profile'])->name('profile')->auth();
 Route::get('profile', [AP_Profile_Controller::class, 'profile'])->name('profile.main')->auth();
-Route::get('profile-edit', [AP_Profile_Controller::class, 'edit'])->name('profile.edit');
-Route::post('profile-edit', [AP_Profile_Controller::class, 'update'])->name('profile.update');
-Route::get('profile/contracts', [AP_Profile_Controller::class, 'contracts'])->name('profile.contracts');
+Route::get('profile-edit', [AP_Profile_Controller::class, 'edit'])->name('profile.edit')->auth();
+Route::post('profile-edit', [AP_Profile_Controller::class, 'update'])->name('profile.update')->auth();
 
-Route::get('profile/{user}', [AP_Profile_Controller::class, 'index'])->name('user_profile');
-Route::get('contracts/{user}/create', [AP_Contracts_Controller::class, 'create'])->name('contracts.create');
-Route::post('contracts/{user}/create', [AP_Contracts_Controller::class, 'store'])->name('contracts.store');
-Route::get('contracts/{user}/{contract}/view', [AP_Contracts_Controller::class, 'show'])->name('contracts.show');
-Route::post('contracts/{user}/{contract}/modify', [AP_Contracts_Controller::class, 'modify'])->name('contracts.modify');
+Route::get('profile/{user}', [AP_Profile_Controller::class, 'index'])->name('user_profile')->auth();
+Route::get('contracts/{user}/create', [AP_Contracts_Controller::class, 'create'])->name('contracts.create')->auth();
+Route::post('contracts/{user}/create', [AP_Contracts_Controller::class, 'store'])->name('contracts.store')->auth();
+Route::get('contracts/{contract}/view', [AP_Contracts_Controller::class, 'show'])->name('contracts.show')->auth();
+Route::post('contracts/{contract}/modify', [AP_Contracts_Controller::class, 'modify'])->name('contracts.modify')->auth();
 
-Route::get('contracts', [AP_Contracts_Controller::class, 'index'])->name('contracts.index');
+Route::get('contracts', [AP_Contracts_Controller::class, 'index'])->name('contracts.index')->auth();

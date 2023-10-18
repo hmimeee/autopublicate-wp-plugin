@@ -10,7 +10,7 @@
 
                         <?php if ($user->get('ID') == get_current_user_id()) : ?>
                             <li><a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">Wallet</a></li>
-                            <li><a href="<?= ap_route('profile.contracts') ?>">Contracts</a></li>
+                            <li><a href="<?= ap_route('contracts') ?>">Contracts</a></li>
                         <?php endif ?>
                     </ul>
                 </div>

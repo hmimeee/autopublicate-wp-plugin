@@ -723,24 +723,24 @@ blockquote {
     padding: 10px;
     margin: 0;
     text-align: center;
-  }
-  
-  .my-detail-footer:before,
-  .my-detail-footer:after {
+}
+
+.my-detail-footer:before,
+.my-detail-footer:after {
     content: " ";
     display: table;
-  }
-  
-  .my-detail-footer:after {
+}
+
+.my-detail-footer:after {
     clear: both;
-  }
-  
-  .my-detail-footer li {
+}
+
+.my-detail-footer li {
     display: inline-block;
     margin: 2px 4px;
-  }
-  
-  .my-detail-footer li a {
+}
+
+.my-detail-footer li a {
     display: block;
     width: 40px;
     height: 40px;
@@ -752,12 +752,12 @@ blockquote {
     font-size: 17px;
     box-shadow: 0px 1px 2px 0px rgba(90, 91, 95, 0.15);
     transition: all 0.3s ease-in-out;
-  }
-  
-  .my-detail-footer li a:hover {
-     box-shadow: 0px 8px 15px 0px rgba(90, 91, 95, 0.33);
-  }
-  
+}
+
+.my-detail-footer li a:hover {
+    box-shadow: 0px 8px 15px 0px rgba(90, 91, 95, 0.33);
+}
+
 /* Responsive */
 
 @media only screen and (max-width: 1199px) {
@@ -1084,7 +1084,8 @@ blockquote {
     border: 1px dashed #6c757d !important;
 }
 
-.btn-close:hover, .btn-close {
+.btn-close:hover,
+.btn-close {
     padding: 1rem !important;
     border: none !important;
     background-color: transparent !important;
@@ -1152,15 +1153,16 @@ blockquote {
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-  }
-  
-  .alert {
+    border-bottom: 1px dotted black;
+    /* If you want dots under the hoverable text */
+}
+
+.alert {
     padding: 0.5rem 0.5rem;
     text-align: center;
-  }
+}
 
-  #progressbar {
+#progressbar {
     margin-bottom: 30px;
     overflow: hidden;
 }
@@ -1229,5 +1231,17 @@ blockquote {
 }
 
 @keyframes spinner {
-    to { transform: rotate(360deg); }
-  }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.nav-tabs .nav-link:first-child {
+    border-left: none;
+}
+
+.nav-tabs .nav-link {
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
