@@ -29,7 +29,7 @@
                         <tr>
                             <td scope="row"><?= ++$i ?></td>
                             <td><?= strlen($contract['title']) > 50 ? substr($contract['title'], 0, 50) . '...' : $contract['title'] ?></td>
-                            <td>$<?= number_format($contract['budget'], 2) ?></td>
+                            <td><?= $contract['budget'] ? '$' . number_format($contract['budget'], 2) : 'N/A' ?></td>
                             <td><?= $contract['deadline'] ?></td>
                             <td><?= ucwords($contract['status']) ?></td>
                             <td>

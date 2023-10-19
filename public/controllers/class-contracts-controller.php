@@ -8,7 +8,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
         $user_id = get_current_user_id();
         $tab = request('tab');
 
-        $query = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id);
+        $query = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id));
 
         switch ($tab) {
             case 'delivered':
@@ -86,7 +86,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
         $attachments = [];
         $user_id = get_current_user_id();
 
-        $contract = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->find($contract);
+        $contract = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->find($contract);
         if (!$contract) {
             return ap_abort();
         }
@@ -156,7 +156,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
     public function modify($contractId)
     {
         $user_id = get_current_user_id();
-        $contract = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->find($contractId);
+        $contract = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->find($contractId);
         if (!$contract) {
             return ap_abort();
         }
@@ -179,7 +179,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
     public function statusUpdate($contractId, $status)
     {
         $user_id = get_current_user_id();
-        $contract = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->where('modified_by', '<>', $user_id)->find($contractId);
+        $contract = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->where('modified_by', '<>', $user_id)->find($contractId);
         if (!$contract) {
             return ap_abort();
         }

@@ -49,7 +49,7 @@
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <select name="budget_type" class="form-control">
-                                                <option>Select Type</option>
+                                                <option value="">Select Type</option>
                                                 <option value="fixed">Fixed</option>
                                                 <option value="estimated">Estimated</option>
                                             </select>
