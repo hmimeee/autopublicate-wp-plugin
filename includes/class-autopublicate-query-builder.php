@@ -53,7 +53,7 @@ class AP_DB
 
     public function get_table()
     {
-        return $this->pluralize($this->table ?? $this->wpdb->prefix . strtolower(str_replace('_Model', '', $this::class)));
+        return isset($this->table) ? $this->wpdb->prefix . $this->table : $this->pluralize($this->wpdb->prefix . strtolower(str_replace('_Model', '', $this::class)));
     }
 
     public function _query()

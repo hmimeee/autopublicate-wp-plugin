@@ -1065,8 +1065,12 @@ blockquote {
 .btn-secondary {
     background-color: #6c757d !important;
     color: #FFF !important;
-    border-radius: 5px;
     border-color: white !important;
+}
+
+.btn {
+    border-radius: 5px;
+    padding: 0.375rem 0.75rem;
 }
 
 .btn-outline-secondary {
@@ -1094,13 +1098,11 @@ blockquote {
 .btn-primary {
     background-color: #FF6C54 !important;
     color: #FFF !important;
-    border-radius: 5px;
     border-color: white !important;
 }
 
 .btn-outline-primary {
     color: #FF6C54;
-    border-radius: 5px;
     border: 1px solid #FF6C54 !important;
 }
 
@@ -1194,15 +1196,25 @@ blockquote {
     content: "\f00c";
 }
 
-#progressbar li.active+li:before {
+#progressbar li.pending:before {
     content: "\f110";
     background-color: #ffc107;
     color: #fff;
     animation: 3s linear infinite spinner;
 }
 
-#progressbar li.active+li:after {
+#progressbar li.pending:after {
     background-color: #ffc107;
+}
+
+#progressbar li.cancelled:before {
+    content: "\f071";
+    background-color: #dc3545;
+    color: #fff;
+}
+
+#progressbar li.cancelled:after {
+    background-color: #dc3545;
 }
 
 #progressbar li:after {
@@ -1221,12 +1233,12 @@ blockquote {
 }
 
 #progressbar li.active {
-    color: #5cb85c;
+    color: #5cb85c !important;
 }
 
 #progressbar li.active:before,
 #progressbar li.active:after {
-    background: #5cb85c;
+    background: #5cb85c !important;
     color: white;
 }
 

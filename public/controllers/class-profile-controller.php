@@ -57,7 +57,7 @@ class AP_Profile_Controller extends AP_Base_Controller
             'profession_title' => request('profession_title'),
             'skills' => request('skills'),
             'languages' => request('languages'),
-            'professional_description' => request('professional_description') ? htmlspecialchars(request('professional_description')) : null,
+            'professional_description' => request('professional_description') ? htmlentities(request('professional_description')) : null,
             'about' => request('about') ? strip_tags(request('about')) : null
         ];
 

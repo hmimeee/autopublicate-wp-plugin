@@ -82,6 +82,7 @@ if (!function_exists('ap_route')) {
                 $uri = str_replace($route['raw_params'], $selected_params, $route['uri']);
             } else if (is_array($params) && !count($route['raw_params'])) {
                 $query = $params;
+                $uri = $route['parsed_uri'];
             }
 
             if ($query) {
@@ -271,5 +272,21 @@ if (!function_exists('paginate_view')) {
     function paginate_view($pagination)
     {
         ap_file_loader('public/views/layouts/sections/pagination.php', ['pagination' => $pagination]);
+    }
+}
+
+if (!function_exists('ap_send_mail')) {
+
+    function ap_send_mail($to, $subject, $body)
+    {
+        if (is_array($body)) {
+            $content = file_get_contents(dirname(__FILE__) . '/' . $body['path'] . '.php');
+
+            $body['params']['subject'] = $subject;
+            foreach ($body['params'] as $var => $value) $content = str_replace("[$var]", $value, $content);
+        }
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        return wp_mail($to, $subject, $content, $headers);
     }
 }

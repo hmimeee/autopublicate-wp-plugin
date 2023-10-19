@@ -6,21 +6,21 @@ class AP_Contracts_Controller extends AP_Base_Controller
     {
         $title = 'Contracts';
         $user_id = get_current_user_id();
-        $type = request('contract', 'ongoing');
+        $tab = request('tab');
 
         $query = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id);
 
-        switch ($type) {
+        switch ($tab) {
             case 'delivered':
                 $query = $query->where('status', 'delivered');
                 break;
 
             case 'completed':
-                $query = $query->whereNotIn('status', ['completed', 'cleared']);
+                $query = $query->whereIn('status', ['completed', 'cleared']);
                 break;
 
             default:
-                $query = $query->whereNotIn('status', ['completed', 'cleared']);
+                $query = $query->whereNotIn('status', ['completed', 'cleared', 'delivered']);
                 break;
         }
 
@@ -58,35 +58,43 @@ class AP_Contracts_Controller extends AP_Base_Controller
             return ap_abort();
         }
 
-        $data = request()->only('title', 'description', 'expected_deadline', 'budget', 'budget_type');
+        $data = request()->only('title', 'expected_deadline', 'budget', 'budget_type');
+        $data['description'] = htmlentities(stripslashes(request('description')));
         $data['provider_id'] = $provider->get('ID');
         $data['buyer_id'] = get_current_user_id();
         $data['attachments'] = implode(',', request()->file('attachments')->save());
+        $contractId = AP_Contract_Model::query()->insert(array_filter($data))->execute();
 
-        $this->wpdb->insert(
-            $this->wpdb->prefix . 'ap_contracts',
-            $data
-        );
+        $user = get_user_by('ID', get_current_user_id());
 
-        return $this->redirectWith(ap_route('contracts.show', [
-            'user' => $username,
-            'contract' => $this->wpdb->insert_id
-        ]), 'Contract created successfully');
+        ap_send_mail($provider->get('email'), 'A contract has been created for you', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $provider->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => "New contract created, please take a look on the details page to accept the contract.",
+                'body_second' => 'The contract was created by ' . $user->get('user_nicename') . ', buyer is waiting for your response regarding the contract.'
+            ]
+        ]);
+
+        return $this->redirectWith(ap_route('contracts.show', $contractId), 'Contract created successfully');
     }
 
     public function show($contract)
     {
         $attachments = [];
         $user_id = get_current_user_id();
-        $contract = AP_Contract_Model::with('buyer', 'provider')->where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->find($contract);
+
+        $contract = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->find($contract);
         if (!$contract) {
             return ap_abort();
         }
 
-        if($contract['buyer_id'] == get_current_user_id()) {
-            $this->user = $contract['provider'];
+        if ($contract['buyer_id'] == get_current_user_id()) {
+            $this->user = AP_User_Model::find($contract['provider_id']);
         } else {
-            $this->user = $contract['buyer'];
+            $this->user = AP_User_Model::find($contract['buyer_id']);
         }
 
         if ($contract['attachments']) {
@@ -97,31 +105,150 @@ class AP_Contracts_Controller extends AP_Base_Controller
                 'post_status' => 'any'
             );
             $query = new WP_Query($args);
-            $attachments = $query->get_posts();
+            $contract['attachments'] = $query->get_posts();
         }
-        $title = 'Contract: ' . $contract['title'];
 
-        return $this->view('contracts/show', compact('contract', 'title'));
+        if ($contract['delivery_attachments']) {
+            $args = array(
+                'post__in' => explode(',', $contract['delivery_attachments']),
+                'post_type' => 'attachment',
+                'no_found_rows' => true,
+                'post_status' => 'any'
+            );
+            $query = new WP_Query($args);
+            $contract['delivery_attachments'] = $query->get_posts();
+        }
+
+        $title = 'Contract: ' . $contract['title'];
+        $progressSequences = [
+            'cancelled' => 0,
+            'pending' => 1,
+            'modified' => 2,
+            'approved' => 3,
+            'delivered' => 4,
+            'completed' => 5,
+            'cleared' => 6
+        ];
+
+        $statusStyles = [
+            'pending' => 'warning',
+            'modified' => 'info',
+            'approved' => 'primary',
+            'delivered' => 'info',
+            'completed' => 'success',
+            'cleared' => 'dark',
+            'cancelled' => 'danger'
+        ];
+
+        $pendingUnder = null;
+        if (in_array($contract['status'], ['pending', 'modified'])) {
+            $pendingUnder = AP_User_Model::find(
+                $contract['status'] == 'pending' ?
+                    $contract['provider_id'] : ($contract['modified_by'] == $contract['provider_id'] ?
+                        $contract['buyer_id'] : $contract['provider_id']
+                    )
+            );
+        }
+
+        return $this->view('contracts/show', compact('contract', 'title', 'progressSequences', 'pendingUnder', 'statusStyles'));
     }
 
-    public function modify($user, $contractId)
+    public function modify($contractId)
     {
-        $provider = get_user_by('login', $user);
-        if (!$provider) {
-            return ap_abort();
-        }
-
-        $provider_id = $provider->get('ID');
-        $buyer_id = get_current_user_id();
-        $contract = $this->wpdb->get_row("SELECT * FROM {$this->wpdb->prefix}ap_contracts WHERE provider_id = $provider_id AND buyer_id = $buyer_id AND id = $contractId", ARRAY_A);
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->find($contractId);
         if (!$contract) {
             return ap_abort();
         }
 
         $deadline = request('deadline', $contract['expected_deadline']);
         $budget = request('budget', $contract['budget']);
-        $this->wpdb->get_row("UPDATE {$this->wpdb->prefix}ap_contracts SET deadline = '$deadline', budget = '$budget', modified_by = '$buyer_id', status = 'modified' WHERE provider_id = $provider_id AND buyer_id = $buyer_id AND id = $contractId");
 
-        return $this->redirectWith(ap_route('contracts.show', ['user' => $user, 'contract' => $contractId]), 'Contract submitted as modified, please wait till other parties to approve');
+        AP_Contract_Model::query()->update([
+            'deadline' => $deadline,
+            'budget' => $budget,
+            'modified_by' => $user_id,
+            'status' => 'modified'
+        ])
+            ->where('id', $contract['id'])
+            ->execute();
+
+        return $this->redirectWith(ap_route('contracts.show', $contractId), 'Contract submitted as modified, please wait till other parties to approve');
+    }
+
+    public function statusUpdate($contractId, $status)
+    {
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where('provider_id', $user_id)->orWhere('buyer_id', $user_id)->where('modified_by', '<>', $user_id)->find($contractId);
+        if (!$contract) {
+            return ap_abort();
+        }
+
+        if (!in_array($status, ['approved', 'cancelled'])) {
+            return $this->redirectWith(ap_route('contracts.show', $contractId), 'Invalid request', 'error');
+        }
+
+        AP_Contract_Model::query()->update([
+            'modified_by' => $user_id,
+            'status' => $status
+        ])
+            ->where('id', $contract['id'])
+            ->execute();
+
+        $messages = [
+            'approved' => 'Good news, the contract has started',
+            'cancelled' => 'The contract has been cancelled'
+        ];
+
+        return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$status]);
+    }
+
+    public function deliver($contractId)
+    {
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where('provider_id', $user_id)->find($contractId);
+        if (!$contract) {
+            return ap_abort();
+        }
+
+        $delivery_notes = request('delivery_notes');
+        $attachments = implode(',', request()->file('attachments')->save());
+
+        AP_Contract_Model::query()->update([
+            'delivery_notes' => $delivery_notes,
+            'delivery_attachments' => $attachments,
+            'status' => 'delivered'
+        ])
+            ->where('id', $contract['id'])
+            ->execute();
+
+        return $this->redirectWith(ap_route('contracts.show', $contractId), 'Contract marked as delivered, please wait till other parties to approve it');
+    }
+
+    public function deliveryAction($contractId, $status)
+    {
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where('buyer_id', $user_id)->find($contractId);
+        if (!$contract) {
+            return ap_abort();
+        }
+
+        if (!in_array($status, ['approved', 'completed'])) {
+            return $this->redirectWith(ap_route('contracts.show', $contractId), 'Invalid request', 'error');
+        }
+
+        AP_Contract_Model::query()->update([
+            'modified_by' => $user_id,
+            'status' => $status
+        ])
+            ->where('id', $contract['id'])
+            ->execute();
+
+        $messages = [
+            'approved' => 'The contract has returned to the provider',
+            'completed' => 'The contract has marked as completed'
+        ];
+
+        return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$status]);
     }
 }

@@ -66,7 +66,8 @@
                             </div>
 
                             <div class="mt-4">
-                                <button class="btn btn-primary profile-button">Submit</button>
+                                <button class="btn btn-primary">Submit</button>
+                                <a href="<?= ap_route('user_profile', $user->get('user_login')) ?>" class="btn btn-secondary">Cancel</a>
                             </div>
                         </div>
                     </div>

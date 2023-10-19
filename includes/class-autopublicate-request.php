@@ -152,7 +152,7 @@ class Autopublicate_Request
     public function save()
     {
         $attachments = [];
-        if (is_array($this->files)) {
+        if (is_array(reset($this->files))) {
             foreach ($this->files['name'] as $key => $file) {
                 $file = array(
                     'name' => $this->files['name'][$key],
