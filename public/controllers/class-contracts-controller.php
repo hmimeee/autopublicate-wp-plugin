@@ -211,7 +211,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
             return ap_abort();
         }
 
-        $delivery_notes = request('delivery_notes');
+        $delivery_notes = htmlentities(stripslashes(request('delivery_notes')));
         $attachments = implode(',', request()->file('attachments')->save());
 
         AP_Contract_Model::query()->update([
