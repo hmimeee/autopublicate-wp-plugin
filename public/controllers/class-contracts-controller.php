@@ -359,6 +359,20 @@ class AP_Contracts_Controller extends AP_Base_Controller
         ];
         AP_Contract_Comment_Model::query()->insert(array_filter($data))->execute();
 
+        $user = AP_User_Model::find($user_id);
+        $notifiable = AP_User_Model::find($user_id != $contract['provider_id'] ? $contract['provider_id'] : $contract['buyer_id']);
+
+        ap_send_mail($notifiable->get('email'), $user->get('user_nicename') . ' has added a comment', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $notifiable->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => 'A comment has been posted by ' . $user->get('user_nicename') . '. Please have look on the detail page and post a reply',
+                'body_second' => 'Also you can take actions based on the comment.'
+            ]
+        ]);
+
         return $this->redirectWith(ap_route('contracts.show', $contract['id']), 'Comment posted successfully');
     }
 }
