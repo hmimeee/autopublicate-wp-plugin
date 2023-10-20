@@ -333,7 +333,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
     {
         $user_id = get_current_user_id();
         $contract = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))
-            ->whereIn('status', ['approved', 'delivered'])
+            ->whereNotIn('status', ['approved', 'delivered'])
             ->find($contractId);
 
         if (!$contract) {
