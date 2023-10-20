@@ -64,7 +64,10 @@ class Autopublicate_Activator
 			modified_by BIGINT UNSIGNED NULL,
 			delivery_notes longtext NULL,
 			delivery_attachments varchar(255) NULL,
+			rating int NULL,
+			review varchar(255) NULL,
 			delivered_at datetime NULL,
+			completed_at datetime NULL,
 			updated_at datetime NULL,
 			created_at datetime NULL,
 
@@ -83,6 +86,7 @@ class Autopublicate_Activator
 			user_id BIGINT UNSIGNED NOT NULL,
 			contract_id BIGINT UNSIGNED NOT NULL,
 			comment longtext NULL,
+			read_at datetime NULL,
 			created_at datetime NULL,
 
 			FOREIGN KEY (user_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE,

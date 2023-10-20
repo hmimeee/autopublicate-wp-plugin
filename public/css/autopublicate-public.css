@@ -644,7 +644,8 @@ div.blog-post {
 
 blockquote {
     font-style: italic;
-    border-left: 5px solid #1abc9c;
+    border-left: 3px solid #6c757d;
+    padding-left: 10px;
 }
 
 
@@ -733,7 +734,7 @@ blockquote {
     margin: 2px 4px;
 }
 
-.my-detail-footer li a {
+.my-detail-footer li a, .my-detail-footer li button {
     display: block;
     width: 40px;
     height: 40px;
@@ -745,9 +746,10 @@ blockquote {
     font-size: 17px;
     box-shadow: 0px 1px 2px 0px rgba(90, 91, 95, 0.15);
     transition: all 0.3s ease-in-out;
+    padding: 0;
 }
 
-.my-detail-footer li a:hover {
+.my-detail-footer li a:hover, .my-detail-footer li button:hover {
     box-shadow: 0px 8px 15px 0px rgba(90, 91, 95, 0.33);
 }
 
@@ -1053,6 +1055,18 @@ blockquote {
     .container {
         max-width: 1024px
     }
+}
+
+.btn-warning {
+    color: #212529;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-warning:hover, .btn-warning:active, .btn-warning:focus {
+    color: #212529;
+    background-color: #e0a800;
+    border-color: #d39e00;
 }
 
 .btn-secondary {

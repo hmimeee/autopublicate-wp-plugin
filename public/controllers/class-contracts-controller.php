@@ -34,6 +34,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
         if (!$this->user) {
             return ap_abort();
         }
+        $this->user->completed_count = AP_Contract_Model::completedContracts($this->user->get('ID'));
 
         $title = 'New Contract with ' . $this->user->get('user_nicename');
 
@@ -62,6 +63,9 @@ class AP_Contracts_Controller extends AP_Base_Controller
         $data['provider_id'] = $provider->get('ID');
         $data['buyer_id'] = get_current_user_id();
         $data['attachments'] = implode(',', request()->file('attachments')->save());
+        $data['updated_at'] = now(true)->format('Y-m-d H:i:s');
+        $data['created_at'] = now(true)->format('Y-m-d H:i:s');
+
         $contractId = AP_Contract_Model::query()->insert(array_filter($data))->execute();
 
         $user = get_user_by('ID', get_current_user_id());
@@ -100,6 +104,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
             $contract['buyer'] = $this->user;
         }
 
+        $this->user->completed_count = AP_Contract_Model::completedContracts($this->user->get('ID'));
         $comments = AP_Contract_Comment_Model::where('contract_id', $contract['id'])->get() ?? [];
         $contract['comments'] = array_map(function ($dt) use ($contract) {
             $dt['user'] = $dt['user_id'] == $contract['provider_id'] ? $contract['provider'] : $contract['buyer'];
@@ -177,10 +182,25 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'deadline' => $deadline,
             'budget' => $budget,
             'modified_by' => $user_id,
-            'status' => 'modified'
+            'status' => 'modified',
+            'updated_at' => now(true)->format('Y-m-d H:i:s')
         ])
             ->where('id', $contract['id'])
             ->execute();
+
+        $user = AP_User_Model::find($user_id);
+        $notifiable = AP_User_Model::find($user_id != $contract['provider_id'] ? $contract['provider_id'] : $contract['buyer_id']);
+
+        ap_send_mail($notifiable->get('email'), $user->get('user_nicename') . ' has modified a contract', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $notifiable->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => "A contract has been modified, please take a look on the details page to accept or modify again.",
+                'body_second' => 'The contract was modified by ' . $user->get('user_nicename') . ', the user is waiting for your response regarding the contract.'
+            ]
+        ]);
 
         return $this->redirectWith(ap_route('contracts.show', $contractId), 'Contract submitted as modified, please wait till other parties to approve');
     }
@@ -209,6 +229,20 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'cancelled' => 'The contract has been cancelled'
         ];
 
+        $user = AP_User_Model::find($user_id);
+        $notifiable = AP_User_Model::find($user_id != $contract['provider_id'] ? $contract['provider_id'] : $contract['buyer_id']);
+
+        ap_send_mail($notifiable->get('email'), $user->get('user_nicename') . ' has ' . $status . ' a contract', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $notifiable->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => $messages[$status],
+                'body_second' => 'The contract status updated by ' . $user->get('user_nicename')
+            ]
+        ]);
+
         return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$status]);
     }
 
@@ -227,10 +261,25 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'delivery_notes' => $delivery_notes,
             'delivery_attachments' => $attachments,
             'status' => 'delivered',
-            'delivered_at' => now(true)->format('Y-m-d H:i:s')
+            'delivered_at' => now(true)->format('Y-m-d H:i:s'),
+            'updated_at' => now(true)->format('Y-m-d H:i:s')
         ])
             ->where('id', $contract['id'])
             ->execute();
+
+        $user = AP_User_Model::find($user_id);
+        $notifiable = AP_User_Model::find($user_id != $contract['provider_id'] ? $contract['provider_id'] : $contract['buyer_id']);
+
+        ap_send_mail($notifiable->get('email'), $user->get('user_nicename') . ' has delivered a contract', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $notifiable->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => 'Good news, a cantract has been delivered. Please click the see details button to know more and find out the delivery.',
+                'body_second' => 'However, you\'re able to return the delivery if it\'s not satisfiable.'
+            ]
+        ]);
 
         return $this->redirectWith(ap_route('contracts.show', $contractId), 'Contract marked as delivered, please wait till other parties to approve it');
     }
@@ -249,7 +298,11 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
         AP_Contract_Model::query()->update([
             'modified_by' => $user_id,
-            'status' => $status
+            'status' => $status,
+            'rating' => request('rating'),
+            'review' => request('review'),
+            'updated_at' => now(true)->format('Y-m-d H:i:s'),
+            'completed_at' => $status == 'completed' ? now(true)->format('Y-m-d H:i:s') : null
         ])
             ->where('id', $contract['id'])
             ->execute();
@@ -259,6 +312,20 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'completed' => 'The contract has marked as completed'
         ];
 
+        $user = AP_User_Model::find($user_id);
+        $notifiable = AP_User_Model::find($user_id != $contract['provider_id'] ? $contract['provider_id'] : $contract['buyer_id']);
+
+        ap_send_mail($notifiable->get('email'), $user->get('user_nicename') . ' has ' . ($status == 'approved' ? 'returned' : 'accepted') . ' the delivery', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $notifiable->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => $status == 'approved' ? $messages[$status] . ' by the buyer. please take a look on the comment to modify as expected.' : $user->get('user_nicename') . ' accepted the delivery and marked the contract as completed',
+                'body_second' => 'Keep up the good work and get more contracts.'
+            ]
+        ]);
+
         return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$status]);
     }
 
@@ -266,7 +333,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
     {
         $user_id = get_current_user_id();
         $contract = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))
-            ->where('status', 'approved')
+            ->whereIn('status', ['approved', 'delivered'])
             ->find($contractId);
 
         if (!$contract) {

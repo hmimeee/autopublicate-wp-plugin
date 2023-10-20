@@ -14,12 +14,12 @@
                             <a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">
                                 <h2><?= ucwords($user->get('user_nicename')) ?></h2>
                             </a>
-                            <div class="mb-2"><i class="fa fa-map-marker"></i> <?= $user->get('country') ?? 'N/A' ?></div>
-                            <div class="mb-2"><i class="fa fa-archive"></i> 0 contracts completed</div>
+                            <div class="mb-2"><i class="fa fa-map-marker"></i> <?= $user->get('country') ?: 'N/A' ?></div>
+                            <div class="mb-2"><i class="fa fa-archive"></i> <?= $user->completed_count ?> contracts completed</div>
                             <div><i class="fa fa-comment"></i> I speak <?= $user->get('languages') ? implode(', ', explode(',', $user->get('languages'))) : 'N/A' ?></div>
                             <div>
                                 <span><i class="fa fa-hands-wash"></i> Skills:</span>
-                                <?php foreach (explode(',', $user->get('skills')) as $skill) : ?>
+                                <?php $skills = array_filter(explode(',', $user->get('skills'))); foreach ($skills as $skill) : ?>
                                     <div class="btn btn-outline-secondary m-1 border"><?= $skill ?></div>
                                 <?php endforeach ?>
                             </div>

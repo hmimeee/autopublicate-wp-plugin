@@ -16,4 +16,5 @@ Route::post('contracts/{contract}/modify', [AP_Contracts_Controller::class, 'mod
 Route::get('contracts/{contract}/status-update/{status}', [AP_Contracts_Controller::class, 'statusUpdate'])->name('contracts.status-update')->auth();
 Route::post('contracts/{contract}/deliver', [AP_Contracts_Controller::class, 'deliver'])->name('contracts.deliver')->auth();
 Route::get('contracts/{contract}/delivery-action/{status}', [AP_Contracts_Controller::class, 'deliveryAction'])->name('contracts.delivery-action')->auth();
+Route::post('contracts/{contract}/delivery-action/{status}', [AP_Contracts_Controller::class, 'deliveryAction'])->name('contracts.delivery-action')->auth();
 Route::post('contracts/{contract}/comment', [AP_Contracts_Controller::class, 'comment'])->name('contracts.comment')->auth();
