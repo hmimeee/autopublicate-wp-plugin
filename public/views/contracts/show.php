@@ -14,6 +14,7 @@
             </ul>
         <?php endif ?>
     </div>
+
     <div class="col-md-5">
         <div class="sticky-top">
             <div class="page-body">
@@ -49,8 +50,8 @@
                                     <i class="fa fa-star <?= $contract['rating'] >= 4 ? 'text-warning' : '' ?>"></i>
                                     <i class="fa fa-star <?= $contract['rating'] >= 5 ? 'text-warning' : '' ?>"></i>
                                 </span>
-                            <?php endif ?>
                             </div>
+                            <?php endif ?>
 
                             <?php if (isset($pendingUnder) && $pendingUnder->get('ID') != get_current_user_id()) : ?>
                                 <hr />
