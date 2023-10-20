@@ -499,13 +499,6 @@ tr>td:nth-child(2) {
     box-shadow: none;
 }
 
-.form-control:focus {
-    border-color: #1abc9c;
-    border-width: 2px;
-}
-
-
-
 /* Testimonials */
 
 .testimonial-content {
@@ -1068,7 +1061,7 @@ blockquote {
     border-color: white !important;
 }
 
-.btn {
+button.btn {
     border-radius: 5px;
     padding: 0.375rem 0.75rem;
 }
@@ -1256,4 +1249,13 @@ blockquote {
     border-top: none;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+hr.dotted {
+    border-bottom: 1px dotted #54595F !important;
+    background-color: transparent !important;
+}
+
+.ck-rounded-corners .ck.ck-balloon-panel {
+    display: none !important;
 }

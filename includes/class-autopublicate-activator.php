@@ -64,12 +64,31 @@ class Autopublicate_Activator
 			modified_by BIGINT UNSIGNED NULL,
 			delivery_notes longtext NULL,
 			delivery_attachments varchar(255) NULL,
+			delivered_at datetime NULL,
+			updated_at datetime NULL,
+			created_at datetime NULL,
 
 			FOREIGN KEY (provider_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE,
 			FOREIGN KEY (buyer_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE,
 			FOREIGN KEY (modified_by) REFERENCES {$wpdb->prefix}users (ID) ON DELETE SET NULL
 			)
 		", $wpdb->prefix . 'ap_contracts');
+
+		// run the query
+		$wpdb->query($sql);
+
+		$sql = $wpdb->prepare("
+		CREATE TABLE %1s (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			user_id BIGINT UNSIGNED NOT NULL,
+			contract_id BIGINT UNSIGNED NOT NULL,
+			comment longtext NULL,
+			created_at datetime NULL,
+
+			FOREIGN KEY (user_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE,
+			FOREIGN KEY (contract_id) REFERENCES {$wpdb->prefix}ap_contracts (id) ON DELETE CASCADE
+			)
+			", $wpdb->prefix . 'ap_contract_comments');
 
 		// run the query
 		$wpdb->query($sql);

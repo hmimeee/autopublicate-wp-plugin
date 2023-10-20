@@ -42,7 +42,6 @@ if (!function_exists('ap_file_loader')) {
     function ap_file_loader($filePath, $data = [])
     {
         if (!file_exists(plugin_dir_path(__FILE__) . trim($filePath, '/'))) {
-            dd(plugin_dir_path(__FILE__) . trim($filePath, '/'));
             throw new Exception('Invalid file', 404);
         }
 
@@ -135,27 +134,27 @@ if (!function_exists('request')) {
     }
 }
 
-if (!function_exists('dd')) {
+// if (!function_exists('dd')) {
 
-    /**
-     * Dump and die
-     * 
-     * @param mixed $data
-     * @return never
-     */
-    function dd($data, $style = true)
-    {
-        if (!$style) {
-            echo  '<pre>';
-            print_r($data);
-            die;
-        }
+//     /**
+//      * Dump and die
+//      * 
+//      * @param mixed $data
+//      * @return never
+//      */
+//     function dd($data, $style = true)
+//     {
+//         if (!$style) {
+//             echo  '<pre>';
+//             print_r($data);
+//             die;
+//         }
 
-        echo  '<pre style="background: #111; color: #3cb53c;">';
-        print_r($data);
-        die;
-    }
-}
+//         echo  '<pre style="background: #111; color: #3cb53c;">';
+//         print_r($data);
+//         die;
+//     }
+// }
 
 if (!function_exists('alert')) {
 

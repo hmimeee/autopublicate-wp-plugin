@@ -34,6 +34,7 @@ class AP_Base_Controller
                 $params['user'] = $this->user;
                 $params['_page'] = $file;
                 $params['_current_url'] = home_url($wp->request);
+                $params['_current_user'] = get_user_by('ID', get_current_user_id());
 
                 ap_file_loader('public/views/layouts/main.php', $params);
             } catch (Throwable $th) {

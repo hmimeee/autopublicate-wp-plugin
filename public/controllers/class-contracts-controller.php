@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class AP_Contracts_Controller extends AP_Base_Controller
 {
     public function index()
@@ -8,7 +10,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
         $user_id = get_current_user_id();
         $tab = request('tab');
 
-        $query = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id));
+        $query = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id));
 
         switch ($tab) {
             case 'delivered':
@@ -86,16 +88,26 @@ class AP_Contracts_Controller extends AP_Base_Controller
         $attachments = [];
         $user_id = get_current_user_id();
 
-        $contract = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->find($contract);
+        $contract = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->find($contract);
         if (!$contract) {
             return ap_abort();
         }
 
         if ($contract['buyer_id'] == get_current_user_id()) {
+            $contract['buyer'] = AP_User_Model::find($contract['buyer_id']);
             $this->user = AP_User_Model::find($contract['provider_id']);
+            $contract['provider'] = $this->user;
         } else {
+            $contract['provider'] = AP_User_Model::find($contract['provider_id']);
             $this->user = AP_User_Model::find($contract['buyer_id']);
+            $contract['buyer'] = $this->user;
         }
+
+        $comments = AP_Contract_Comment_Model::where('contract_id', $contract['id'])->get() ?? [];
+        $contract['comments'] = array_map(function ($dt) use ($contract) {
+            $dt['user'] = $dt['user_id'] == $contract['provider_id'] ? $contract['provider'] : $contract['buyer'];
+            return $dt;
+        }, $comments);
 
         if ($contract['attachments']) {
             $args = array(
@@ -156,7 +168,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
     public function modify($contractId)
     {
         $user_id = get_current_user_id();
-        $contract = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->find($contractId);
+        $contract = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->find($contractId);
         if (!$contract) {
             return ap_abort();
         }
@@ -179,7 +191,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
     public function statusUpdate($contractId, $status)
     {
         $user_id = get_current_user_id();
-        $contract = AP_Contract_Model::where(fn($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->where('modified_by', '<>', $user_id)->find($contractId);
+        $contract = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->where('modified_by', '<>', $user_id)->find($contractId);
         if (!$contract) {
             return ap_abort();
         }
@@ -217,7 +229,8 @@ class AP_Contracts_Controller extends AP_Base_Controller
         AP_Contract_Model::query()->update([
             'delivery_notes' => $delivery_notes,
             'delivery_attachments' => $attachments,
-            'status' => 'delivered'
+            'status' => 'delivered',
+            'delivered_at' => Carbon::now()
         ])
             ->where('id', $contract['id'])
             ->execute();
@@ -250,5 +263,27 @@ class AP_Contracts_Controller extends AP_Base_Controller
         ];
 
         return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$status]);
+    }
+
+    public function comment($contractId)
+    {
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))
+            ->where('status', 'approved')
+            ->find($contractId);
+
+        if (!$contract) {
+            return ap_abort();
+        }
+
+        $data = [
+            'comment' => htmlentities(stripslashes(request('comment'))),
+            'contract_id' => $contract['id'],
+            'user_id' => get_current_user_id(),
+            'created_at' => Carbon::now()
+        ];
+        AP_Contract_Comment_Model::query()->insert(array_filter($data))->execute();
+
+        return $this->redirectWith(ap_route('contracts.show', $contract['id']), 'Comment posted successfully');
     }
 }

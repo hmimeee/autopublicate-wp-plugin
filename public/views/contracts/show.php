@@ -15,6 +15,7 @@
         <?php endif ?>
     </div>
     <div class="col-md-5">
+        <div class="sticky-top">
         <div class="page-body">
             <div class="sub-title">
                 <h2>Contract Details</h2>
@@ -105,116 +106,91 @@
                 </div>
             </div>
         </div>
+        </div>
     </div>
 
     <div class="col-md-7">
-        <?php if ($contract['delivery_attachments'] && $progressSequences[$contract['status']] > 3) : ?>
-            <div class="page-body">
-                <div class="sub-title">
-                    <h2>Delivery</h2>
-                </div>
+        <div class="page-body mt-md-0 mt-sm-4">
+            <div class="sub-title">
+                <h2>Activity</h2>
+            </div>
 
-                <div class="content-page p-3">
-                    <?= html_entity_decode($contract['delivery_notes']) ?>
-
-                    <hr />
-                    <div class="pb-2">Attachments:</div>
-                    <div>
-                        <?php foreach ($contract['delivery_attachments'] as $attachment) : ?>
-                            <a class="badge bg-primary text-white" href="<?= $attachment->guid ?>" target="_blank"><i class="fa fa-paperclip"></i> <?= basename($attachment->guid) ?></a>
-                        <?php endforeach ?>
+            <div class="content-page p-3 d-flex flex-column">
+                <div>
+                    <div class="d-flex flex-row <?= get_current_user_id() == $contract['buyer_id'] ? 'flex-row-reverse text-end' : '' ?>">
+                        <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('user_nicename') ?>">
+                        <div class="d-flex flex-column justify-content-start">
+                            <span class="d-block fw-bold"><?= $contract['buyer']->get('user_nicename') ?></span>
+                            <span class="date text-black-50"><?= \Carbon\Carbon::create($contract['created_at'])->format('d M \a\t H:i') ?></span>
+                        </div>
+                    </div>
+                    <div class="mt-2 p-3 rounded <?= get_current_user_id() == $contract['buyer_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
+                        <?= html_entity_decode($contract['description']) ?>
                     </div>
                 </div>
-            </div>
-            <br />
-        <?php endif ?>
 
-        <div class="page-body">
-            <div class="sub-title">
-                <h2>Contract Description</h2>
+                <?php if ($contract['delivery_attachments'] && $progressSequences[$contract['status']] > 3) : ?>
+                    <hr class="dotted" />
+                    <div>
+                        <div class="d-flex flex-row <?= get_current_user_id() == $contract['provider_id'] ? 'flex-row-reverse text-end' : '' ?>">
+                            <img class="rounded-circle <?= get_current_user_id() == $contract['provider_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['provider']->get('display_name') ?>" width="50" alt="<?= $contract['provider']->get('user_nicename') ?>">
+                            <div class="d-flex flex-column justify-content-start">
+                                <span class="d-block fw-bold"><?= $contract['provider']->get('user_nicename') ?></span>
+                                <span class="date text-black-50"><?= \Carbon\Carbon::create($contract['delivered_at'])->format('d M \a\t H:i') ?></span>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-3 rounded <?= get_current_user_id() == $contract['provider_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
+                            <?= html_entity_decode($contract['delivery_notes']) ?>
+                            <hr class="dotted mb-1" />
+                            <div class="pb-2 small">Attachments:</div>
+                            <div>
+                                <?php foreach ($contract['delivery_attachments'] as $attachment) : ?>
+                                    <a class="badge <?= get_current_user_id() == $contract['provider_id'] ? 'bg-light' : 'bg-primary text-white' ?>" href="<?= $attachment->guid ?>" target="_blank"><i class="fa fa-paperclip"></i> <?= basename($attachment->guid) ?></a>
+                                <?php endforeach ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif ?>
+
+                <?php foreach ($contract['comments'] as $comment) : ?>
+                    <hr class="dotted" />
+                    <div>
+                        <div class="d-flex flex-row <?= get_current_user_id() == $comment['user_id'] ? 'flex-row-reverse text-end' : '' ?>">
+                            <img class="rounded-circle <?= get_current_user_id() == $comment['user_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $comment['user']->get('display_name') ?>" width="50" alt="<?= $comment['user']->get('user_nicename') ?>">
+                            <div class="d-flex flex-column justify-content-start">
+                                <span class="d-block fw-bold"><?= $comment['user']->get('user_nicename') ?></span>
+                                <span class="date text-black-50"><?= \Carbon\Carbon::create($comment['created_at'])->format('d M \a\t H:i') ?></span>
+                            </div>
+                        </div>
+                        <div class="mt-2 p-3 rounded <?= get_current_user_id() == $comment['user_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
+                            <?= html_entity_decode($comment['comment']) ?>
+                        </div>
+                    </div>
+                <?php endforeach ?>
             </div>
 
-            <div class="content-page p-3">
-                <?= html_entity_decode($contract['description']) ?>
-            </div>
+            <?php if (!in_array($contract['status'], ['completed', 'cleared'])) : ?>
+                <div class="bg-light p-3">
+                    <form method="post" action="<?= ap_route('contracts.comment', $contract['id']) ?>">
+                        <?php wp_nonce_field(); ?>
+                        <textarea name="comment" class="form-control ms-1 editor"></textarea>
+                        <div class="mt-2 d-flex justify-content-end">
+                            <button class="btn btn-primary btn-sm">Send</button>
+                        </div>
+                    </form>
+                </div>
+            <?php endif ?>
         </div>
     </div>
 </div>
 
-<?php if ($contract['status'] == 'pending' || ($contract['status'] == 'modified' && $contract['modified_by'] == $user->get('ID'))) : ?>
-    <!-- Modal -->
-    <div class="modal fade mt-3" id="edit-contract-modal" tabindex="-1" aria-labelledby="edit-contract-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="edit-contract-modal-label">Modify Contract</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post" action="<?= ap_route('contracts.modify', $contract['id']) ?>">
-                    <?php wp_nonce_field(); ?>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="deadline">Deadline</label>
-                            <input type="date" name="deadline" value="<?= $contract['deadline'] ?? $contract['expected_deadline'] ?>" class="form-control" />
-                        </div>
+<?php include 'show-modals.php' ?>
 
-                        <div class="form-group">
-                            <label for="deadline">Budget</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input <?= $contract['budget_type'] == 'fixed' ? 'disabled' : '' ?> type="number" step="any" name="budget" value="<?= number_format($contract['budget'] ?? 0, 2) ?>" class="form-control" />
-                            </div>
-                            <?php if ($contract['budget_type'] == 'fixed') : ?>
-                                <small class="text-danger fw-light">Client created contract with the fixed budget, can't change it.</small>
-                            <?php endif ?>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary">Submit with changes</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-<?php endif ?>
-
-<?php if ($contract['status'] == 'approved' && $contract['provider_id'] == get_current_user_id()) : ?>
-    <div class="modal fade" id="contract-delivery-modal" tabindex="-1" aria-labelledby="contract-delivery-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="contract-delivery-modal-label">Deliver Contract</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post" enctype="multipart/form-data" action="<?= ap_route('contracts.deliver', ['user' => $user->get('user_login'), 'contract' => $contract['id']]) ?>">
-                    <?php wp_nonce_field(); ?>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="name-field">Delivery Notes</label>
-                            <textarea id="editor" name="delivery_notes"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="attachments">Attachments</label>
-                            <input type="file" name="attachments[]" class="form-control" multiple />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary">Deliver Now</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="<?= str_replace('/views', '', plugin_dir_url(__DIR__)) . 'js/ckeditor.js' ?>"></script>
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
-<?php endif ?>
+<script src="<?= str_replace('/views', '', plugin_dir_url(__DIR__)) . 'js/ckeditor.js' ?>"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('.editor'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>

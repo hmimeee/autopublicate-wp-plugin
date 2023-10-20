@@ -18,11 +18,11 @@
                             <div class="mb-2"><i class="fa fa-archive"></i> 0 contracts completed</div>
                             <div><i class="fa fa-comment"></i> I speak <?= $user->get('languages') ? implode(', ', explode(',', $user->get('languages'))) : 'N/A' ?></div>
                             <div>
-                            <span><i class="fa fa-hands-wash"></i> Skills:</span>
-                            <?php foreach (explode(',', $user->get('skills')) as $skill) : ?>
-                                <div class="btn btn-outline-secondary m-1 border"><?= $skill ?></div>
-                            <?php endforeach ?>
-                        </div>
+                                <span><i class="fa fa-hands-wash"></i> Skills:</span>
+                                <?php foreach (explode(',', $user->get('skills')) as $skill) : ?>
+                                    <div class="btn btn-outline-secondary m-1 border"><?= $skill ?></div>
+                                <?php endforeach ?>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-9 border-right">
