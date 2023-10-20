@@ -121,7 +121,7 @@
                         <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('user_nicename') ?>">
                         <div class="d-flex flex-column justify-content-start">
                             <span class="d-block fw-bold"><?= $contract['buyer']->get('user_nicename') ?></span>
-                            <span class="date text-black-50"><?= \Carbon\Carbon::create($contract['created_at'])->format('d M \a\t H:i') ?></span>
+                            <span class="date text-black-50"><?= ap_date_format($contract['created_at'], 'd M \a\t h:i a') ?></span>
                         </div>
                     </div>
                     <div class="mt-2 p-3 rounded <?= get_current_user_id() == $contract['buyer_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
@@ -136,7 +136,7 @@
                             <img class="rounded-circle <?= get_current_user_id() == $contract['provider_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['provider']->get('display_name') ?>" width="50" alt="<?= $contract['provider']->get('user_nicename') ?>">
                             <div class="d-flex flex-column justify-content-start">
                                 <span class="d-block fw-bold"><?= $contract['provider']->get('user_nicename') ?></span>
-                                <span class="date text-black-50"><?= \Carbon\Carbon::create($contract['delivered_at'])->format('d M \a\t H:i') ?></span>
+                                <span class="date text-black-50"><?=ap_date_format($contract['delivered_at'], 'd M \a\t h:i a') ?></span>
                             </div>
                         </div>
                         <div class="mt-2 p-3 rounded <?= get_current_user_id() == $contract['provider_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
@@ -159,7 +159,7 @@
                             <img class="rounded-circle <?= get_current_user_id() == $comment['user_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $comment['user']->get('display_name') ?>" width="50" alt="<?= $comment['user']->get('user_nicename') ?>">
                             <div class="d-flex flex-column justify-content-start">
                                 <span class="d-block fw-bold"><?= $comment['user']->get('user_nicename') ?></span>
-                                <span class="date text-black-50"><?= \Carbon\Carbon::create($comment['created_at'])->format('d M \a\t H:i') ?></span>
+                                <span class="date text-black-50"><?=ap_date_format($comment['created_at'], 'd M \a\t h:i a') ?></span>
                             </div>
                         </div>
                         <div class="mt-2 p-3 rounded <?= get_current_user_id() == $comment['user_id'] ? 'bg-primary text-white' : 'bg-light' ?>">

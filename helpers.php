@@ -134,27 +134,27 @@ if (!function_exists('request')) {
     }
 }
 
-// if (!function_exists('dd')) {
+if (!function_exists('dd')) {
 
-//     /**
-//      * Dump and die
-//      * 
-//      * @param mixed $data
-//      * @return never
-//      */
-//     function dd($data, $style = true)
-//     {
-//         if (!$style) {
-//             echo  '<pre>';
-//             print_r($data);
-//             die;
-//         }
+    /**
+     * Dump and die
+     * 
+     * @param mixed $data
+     * @return never
+     */
+    function dd($data, $style = true)
+    {
+        if (!$style) {
+            echo  '<pre>';
+            print_r($data);
+            die;
+        }
 
-//         echo  '<pre style="background: #111; color: #3cb53c;">';
-//         print_r($data);
-//         die;
-//     }
-// }
+        echo  '<pre style="background: #111; color: #3cb53c;">';
+        print_r($data);
+        die;
+    }
+}
 
 if (!function_exists('alert')) {
 
@@ -287,5 +287,12 @@ if (!function_exists('ap_send_mail')) {
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
         return wp_mail($to, $subject, $content, $headers);
+    }
+}
+
+if (!function_exists('ap_date_format')) {
+    function ap_date_format(string $date = null, string $format = 'Y-m-d H:i:s')
+    {
+        return (new \DateTime($date ?? ''))->setTimezone(wp_timezone())->format($format);
     }
 }

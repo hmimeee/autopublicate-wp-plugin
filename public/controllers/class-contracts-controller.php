@@ -1,7 +1,4 @@
 <?php
-
-use Carbon\Carbon;
-
 class AP_Contracts_Controller extends AP_Base_Controller
 {
     public function index()
@@ -230,7 +227,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'delivery_notes' => $delivery_notes,
             'delivery_attachments' => $attachments,
             'status' => 'delivered',
-            'delivered_at' => Carbon::now()
+            'delivered_at' => now(true)->format('Y-m-d H:i:s')
         ])
             ->where('id', $contract['id'])
             ->execute();
@@ -280,7 +277,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'comment' => htmlentities(stripslashes(request('comment'))),
             'contract_id' => $contract['id'],
             'user_id' => get_current_user_id(),
-            'created_at' => Carbon::now()
+            'created_at' => now(true)->format('Y-m-d H:i:s')
         ];
         AP_Contract_Comment_Model::query()->insert(array_filter($data))->execute();
 
