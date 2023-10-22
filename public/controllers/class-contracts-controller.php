@@ -62,7 +62,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
         ]);
 
         if (!$validate['status']) {
-            return $this->redirectWith(ap_route('user_profile.contracts.create', $username), $validate['message'], 'error');
+            return $this->redirectWith(ap_route('contracts.create', $username), $validate['message'], 'error');
         }
 
         $provider = get_user_by('login', $username);
