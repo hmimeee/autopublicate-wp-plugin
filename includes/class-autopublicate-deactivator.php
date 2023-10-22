@@ -36,6 +36,7 @@ class Autopublicate_Deactivator
 
 		$sql = $wpdb->prepare("
 			ALTER TABLE %1s
+			DROP COLUMN image,
 			DROP COLUMN country,
 			DROP COLUMN profession_title,
 			DROP COLUMN languages,

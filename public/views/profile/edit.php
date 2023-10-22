@@ -2,7 +2,7 @@
     <h2>Edit Profile</h2>
 </div>
 
-<div class="content-page">
+<div class="content-page pt-2">
     <div class="ps-4 pe-4">
         <form method="post">
             <div class="row">

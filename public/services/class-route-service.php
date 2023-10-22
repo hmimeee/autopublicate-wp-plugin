@@ -36,15 +36,16 @@ class AP_Route_Service
 
 
                 $route['parsed_uri'] = implode('/', $parts);
-                //Declare a global variable to get current route
-                global $current_route;
-                $current_route = $route;
 
                 if ($route['parsed_uri'] == implode('/', $uri_parts) && $route['method'] == $_SERVER['REQUEST_METHOD']) {
                     if (($route['auth'] && !get_current_user_id())) {
                         wp_redirect(wp_login_url());
                         exit;
                     }
+
+                    //Declare a global variable to get current route
+                    global $current_route;
+                    $current_route = $route;
 
                     wp_enqueue_style($plugin_name . '-plugin', plugin_dir_url(__DIR__) . 'css/autopublicate-plugin-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
                     wp_enqueue_style($plugin_name, plugin_dir_url(__DIR__) . 'css/autopublicate-public.css', array(), AUTOPUBLICATE_VERSION, 'all');
@@ -208,7 +209,7 @@ class AP_Route_Service
 
     private function call($method, $args)
     {
-        if (! method_exists($this , '_' . $method)) {
+        if (!method_exists($this, '_' . $method)) {
             throw new Exception('Call undefined method ' . $method);
         }
 

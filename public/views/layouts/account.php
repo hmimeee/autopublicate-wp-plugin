@@ -2,18 +2,11 @@
 
     <div class="col-md-4">
         <div>
-            <div class="my-pic">
-                <img src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
-                <div id="menu">
-                    <ul class="menu-link">
-                        <li><a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">About</a></li>
-
-                        <?php if ($user->get('ID') == get_current_user_id()) : ?>
-                            <li><a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">Wallet</a></li>
-                            <li><a href="<?= ap_route('contracts.index') ?>">Contracts</a></li>
-                        <?php endif ?>
-                    </ul>
-                </div>
+            <div class="my-pic position-relative">
+                <img id="avatar" src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
+                <?php if (ap_is_route('profile.edit')) : ?>
+                    <button id="avatar-change" class="btn btn-xs btn-secondary position-absolute top-0 end-0 m-2"><i class="fa fa-camera"></i></button>
+                <?php endif ?>
             </div>
 
             <div class="my-detail">
@@ -22,7 +15,7 @@
                     <h1><?= $user->get('display_name') ?> <?= $user->get('user_nicename') ? '(' . $user->get('user_nicename') . ')' : '' ?></h1>
                     <span><?= $user->get('profession_title') ?></span>
 
-                    <?php if($user->get('about')): ?>
+                    <?php if ($user->get('about')) : ?>
                         <p class="text-wrap text-start mt-2"><?= $user->get('about') ?></p>
                     <?php endif ?>
                 </div>

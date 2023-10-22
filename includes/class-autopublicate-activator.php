@@ -36,6 +36,7 @@ class Autopublicate_Activator
 
 		$sql = $wpdb->prepare("
 			ALTER TABLE %1s
+			ADD image varchar(255) NULL;
 			ADD profession_title varchar(255) NULL,
 			ADD country varchar(255) NULL,
 			ADD languages varchar(255) NULL,

@@ -95,6 +95,24 @@ if (!function_exists('ap_route')) {
     }
 }
 
+if (!function_exists('ap_is_route')) {
+    function ap_is_route($route_name, $params = [], $has_multiple = false)
+    {
+        global $current_route;
+        if ($has_multiple && is_array($route_name)) {
+            $routeUris = [];
+            array_walk($route_name, function ($route, $key) use(&$routeUris) {
+                $routeUris[] = is_array($route) || is_string($key) ? ap_route($key, $route) : ap_route($route);
+            });
+            
+            return in_array(site_url($current_route['parsed_uri']), $routeUris);
+        } else {
+            $routeUri = ap_route($route_name, $params);
+            return site_url($current_route['parsed_uri']) == $routeUri;
+        }
+    }
+}
+
 if (!function_exists('now')) {
     /**
      * Get the current time

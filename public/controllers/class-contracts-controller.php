@@ -25,7 +25,17 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
         $contracts = paginate($query, request('page', 1));
 
-        return $this->view('contracts/index', compact('title', 'contracts'));
+        $pendingCount = AP_Contract_Model::where(
+            fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id)
+        )->where('status', 'pending')
+            ->count();
+
+        $deliveredCount = AP_Contract_Model::where(
+            fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id)
+        )->where('status', 'delivered')
+            ->count();
+
+        return $this->view('contracts/index', compact('title', 'contracts', 'pendingCount', 'deliveredCount'));
     }
 
     public function create($username)
@@ -38,15 +48,17 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
         $title = 'New Contract with ' . $this->user->get('user_nicename');
 
-        return $this->view('contracts/create', compact('title'));
+        return $this->view('contracts/create', compact('title', 'username'));
     }
 
     public function store($username)
     {
         $validate = request()->validate([
             'title' => 'string|min:5',
-            'description' => 'string',
-            'expected_deadline' => 'date:Y-m-d'
+            'description' => 'nullable|string',
+            'budget_type' => 'required|in:fixed,estimated',
+            'budget' => 'required|numeric|min:1',
+            'expected_deadline' => 'required|date:Y-m-d'
         ]);
 
         if (!$validate['status']) {
@@ -257,6 +269,15 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
     public function deliver($contractId)
     {
+        $validate = request()->validate([
+            'delivery_notes' => 'required|string|min:5',
+            'attachments' => 'nullable|file|max:10240',
+        ]);
+
+        if (!$validate['status']) {
+            return $this->redirectWith(ap_route('contracts.show', $contractId), $validate['message'], 'error');
+        }
+
         $user_id = get_current_user_id();
         $contract = AP_Contract_Model::where('provider_id', $user_id)->find($contractId);
         if (!$contract) {
@@ -297,7 +318,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
     {
         $user_id = get_current_user_id();
         $contract = AP_Contract_Model::where('buyer_id', $user_id)->find($contractId);
-        if (!$contract) {
+        if (!$contract || ($status == 'completed' && !isset($_POST['rating']))) {
             return ap_abort();
         }
 

@@ -6,6 +6,8 @@ class Autopublicate_Request
 
     private $files;
 
+    private $rules;
+
     public function __construct()
     {
         $post = $_POST;
@@ -41,20 +43,17 @@ class Autopublicate_Request
      */
     public function validate($rules)
     {
+        $this->rules = $rules;
         $data = $this->data;
-        $validate = true;
 
-        foreach ($data as $index => $dt) {
+        foreach ($rules as $key => $rulesGroup) {
+            $rulesGroup = explode('|', $rulesGroup);
+            if (in_array('nullable', $rulesGroup) && (is_null($data[$key]) || ((is_array($data[$key]['tmp_name']) && !count($data[$key]['tmp_name'])) && (is_null($data[$key]['tmp_name'])) || $data[$key]['tmp_name'] == '')))
+                return static::message(true, "Validated successfully");
 
-
-            $has_rule = isset($rules[$index]) ? $rules[$index] : null;
-            if (!$has_rule)
-                continue;
-
-            $explode_rules = explode('|', $has_rule);
-
-            foreach ($explode_rules as $rule) {
-                $check = static::checkValid($rule, $dt, $index);
+            foreach ($rulesGroup as $rule) {
+                $dt = isset($data[$key]) ? $data[$key] : null;
+                $check = $this->checkValid($rule, $dt, $key);
 
                 if (!$check['status'])
                     return $check;
@@ -72,20 +71,29 @@ class Autopublicate_Request
      * @param string $key Key of the data
      * @return boolean
      */
-    public static function checkValid($rule, $data, $key)
+    public function checkValid($rule, $data, $key)
     {
-        $key = ucwords($key);
+        $rawKey = $key;
+        $key = 'The ' . str_replace('_', ' ', $key);
+        $explode_rule = explode(':', $rule);
 
-        if ($rule == 'numeric' && !is_numeric($data))
-            return static::message(false, "$key must be an integer value");
+        if ($rule == 'required' && (is_null($data) || empty($data) || $data == ''))
+            return static::message(false, "$key field is required");
 
-        if ($rule == 'string' && !is_string($data))
+        else if ($rule == 'numeric' && !is_numeric($data))
+            return static::message(false, "$key must be a numeric value");
+
+        else if ($rule == 'string' && !is_string($data))
             return static::message(false, "$key must be a string value");
 
-        $explode_rule = explode(':', $rule);
-        if (count($explode_rule) > 1) {
+        else if ($rule == 'date' && $data != date('Y-m-d', strtotime($data)))
+            return static::message(false, "$key invalid date format");
 
-            if (is_numeric($data)) {
+        else if ($rule == 'file' && (!isset($data['tmp_name']) || (!is_uploaded_file($data['tmp_name']) && !is_uploaded_file(reset($data['tmp_name']))))) {
+            return static::message(false, "$key must be a file");
+        } else if (count($explode_rule) > 1) {
+
+            if (strrpos($this->rules[$rawKey], 'numeric')  && is_numeric($data)) {
                 $min = intval(end($explode_rule));
                 if (reset($explode_rule) == 'min' && intval($data) < $min)
                     return static::message(false, "$key should not be less than " . $min . " characters");
@@ -93,7 +101,7 @@ class Autopublicate_Request
                 $max = intval(end($explode_rule));
                 if (reset($explode_rule) == 'max' && intval($data) > $max)
                     return static::message(false, "$key should not be grater than " . $max . " characters");
-            } else {
+            } elseif (is_string($data)) {
                 $min = intval(end($explode_rule));
                 if (reset($explode_rule) == 'min' && strlen($data) < $min)
                     return static::message(false, "$key should not be less than " . $min . " characters");
@@ -101,24 +109,27 @@ class Autopublicate_Request
                 $max = intval(end($explode_rule));
                 if (reset($explode_rule) == 'max' && strlen($data) > $max)
                     return static::message(false, "$key should not be grater than " . $max . " characters");
-            }
+            } else if (isset($data['tmp_name']) && (is_uploaded_file($data['tmp_name']) || is_uploaded_file(reset($data['tmp_name'])))) {
+                $sizes = is_array($data['size']) ? $data['size'] : [$data['size']];
+                $limit = intval(end($explode_rule));
+                $convertedSize = $limit > 1024 ? $limit / 1024 . 'MB' : $limit . 'KB';
 
-            if (reset($explode_rule) == 'date') {
+                foreach ($sizes as $size) {
+                    if (reset($explode_rule) == 'max' && $size > ($limit * 1024))
+                        return static::message(false, "$key maximum upload size is {$convertedSize}");
+
+                    else if (reset($explode_rule) == 'min' && $size < ($limit * 1024))
+                        return static::message(false, "$key minimum upload size is {$convertedSize}");
+                }
+            } else if (reset($explode_rule) == 'date') {
                 $format = end($explode_rule);
                 if ($data != date($format, strtotime($data))) static::message(false, "$key field must have the date format '$format'");
+            } else if (reset($explode_rule) == 'in') {
+                $allowed_values = explode(',', end($explode_rule));
+
+                if (!in_array($data, $allowed_values))
+                    return static::message(false, "$key allowed values are: " . end($explode_rule));
             }
-        }
-
-        $has_in = explode(':', $rule);
-        if (reset($has_in) == 'in') {
-            $allowed_values = explode(',', end($has_in));
-
-            if (!in_array($data, $allowed_values))
-                return static::message(false, "$key allowed values are: " . end($has_in));
-        }
-
-        if ($rule == 'date') {
-            return $data == date('Y-m-d', strtotime($data));
         }
 
         return static::message(true, "Validated successfully");

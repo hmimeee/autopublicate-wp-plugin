@@ -44,7 +44,7 @@
                     <h5 class="modal-title" id="contract-delivery-modal-label">Deliver Contract</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="post" enctype="multipart/form-data" action="<?= ap_route('contracts.deliver', ['user' => $user->get('user_login'), 'contract' => $contract['id']]) ?>">
+                <form method="post" enctype="multipart/form-data" action="<?= ap_route('contracts.deliver', $contract['id']) ?>">
                     <?php wp_nonce_field(); ?>
                     <div class="modal-body">
                         <div class="form-group">
@@ -54,7 +54,7 @@
 
                         <div class="form-group">
                             <label for="attachments">Attachments</label>
-                            <input type="file" name="attachments[]" class="form-control" multiple />
+                            <input type="file" name="attachments" class="form-control" />
                         </div>
                     </div>
                     <div class="modal-footer">

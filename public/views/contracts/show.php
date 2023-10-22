@@ -36,7 +36,11 @@
                             </div>
                         <?php endif ?>
                         <hr />
-                        <div class="pb-2"><i class="fa fa-clock"></i> Budget Type: <span class="ps-2"><?= ucfirst($contract['budget_type'] ?? 'N/A') ?></span></div>
+                        
+                        <?php if ($contract['status'] == 'pending') : ?>
+                            <div class="pb-2"><i class="fa fa-clock"></i> Budget Type: <span class="ps-2"><?= ucfirst($contract['budget_type'] ?? 'N/A') ?></span></div>
+                        <?php endif ?>
+
                         <div class="pb-2"><i class="fa fa-dollar-sign p-1"></i> Budget: <span class="ps-2">$<?= number_format($contract['budget'] ?? 0, 2) ?></span></div>
                         <div class="pb-2"><i class="fa fa-clock"></i> Deadline: <span class="ps-2"><?= $contract['deadline'] ?? $contract['expected_deadline'] ?? 'N/A' ?></span></div>
                         <div class="pb-2"><i class="fa fa-info-circle"></i> Status: <span class="badge text-white bg-<?= $statusStyles[$contract['status']] ?>"><?= ucwords($contract['status']) ?></span></div>
@@ -51,81 +55,81 @@
                                     <i class="fa fa-star <?= $contract['rating'] >= 5 ? 'text-warning' : '' ?>"></i>
                                 </span>
                             </div>
-                            <?php endif ?>
+                        <?php endif ?>
 
-                            <?php if (isset($pendingUnder) && $pendingUnder->get('ID') != get_current_user_id()) : ?>
-                                <hr />
-                                <div class="pb-2"><i class="fa fa-user"></i> Pending Under:</div>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            <img class="rounded-circle" src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>">
+                        <?php if (isset($pendingUnder) && $pendingUnder->get('ID') != get_current_user_id()) : ?>
+                            <hr />
+                            <div class="pb-2"><i class="fa fa-user"></i> Pending Under:</div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <img class="rounded-circle" src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>">
 
-                                            <div class="ms-2">
-                                                <h5 class="mb-0"><?= $pendingUnder->get('user_nicename') ?> (<small><?= $pendingUnder->get('user_login') ?></small>)</h5>
-                                                <i class="fa fa-briefcase me-1"></i> <?= $pendingUnder->get('profession_title') ?: 'N/A' ?>
-                                            </div>
+                                        <div class="ms-2">
+                                            <h5 class="mb-0"><?= $pendingUnder->get('user_nicename') ?> (<small><?= $pendingUnder->get('user_login') ?></small>)</h5>
+                                            <i class="fa fa-briefcase me-1"></i> <?= $pendingUnder->get('profession_title') ?: 'N/A' ?>
                                         </div>
                                     </div>
                                 </div>
-                            <?php endif ?>
+                            </div>
+                        <?php endif ?>
 
-                            <?php if (($contract['status'] == 'pending' && $contract['provider_id'] == get_current_user_id()) || ($contract['status'] == 'modified' && $contract['modified_by'] == $user->get('ID'))) : ?>
-                                <hr />
+                        <?php if (($contract['status'] == 'pending' && $contract['provider_id'] == get_current_user_id()) || ($contract['status'] == 'modified' && $contract['modified_by'] == $user->get('ID'))) : ?>
+                            <hr />
+                            <ul class="my-detail-footer">
+                                <li><a class="bg-primary" title="Edit" href="javascript:;" data-bs-toggle="modal" data-bs-target="#edit-contract-modal"><i class="fa fa-pen"></i></a></li>
+                                <li><a class="bg-success" title="Approve" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-check"></i></a></li>
+                                <li><a class="bg-danger" title="Cancel" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'cancelled']) ?>"><i class="fa fa-times"></i></a></li>
+                            </ul>
+                        <?php endif ?>
+
+                        <?php if ($contract['status'] == 'approved' && $contract['provider_id'] == get_current_user_id()) : ?>
+                            <hr />
+                            <ul class="my-detail-footer">
+                                <li><a class="bg-primary" title="Deliver" href="javascript:;" data-bs-toggle="modal" data-bs-target="#contract-delivery-modal"><i class="fa fa-box"></i></a></li>
+                            </ul>
+                        <?php endif ?>
+
+                        <?php if ($contract['status'] == 'delivered' && $contract['buyer_id'] == get_current_user_id()) : ?>
+                            <hr />
+                            <form method="post" action="<?= ap_route('contracts.delivery-accept', ['contract' => $contract['id'], 'status' => 'completed']) ?>">
+                                <span class="field-label-info"></span>
+                                <input type="hidden" id="selected_rating" name="rating" value="">
+                                </label>
+
+                                <div class="text-center mb-3">
+                                    How would you rate the provider?
+
+                                    <h3 class="bold rating-header">
+                                        <span class="selected-rating">0</span><small> / 5</small>
+                                    </h3>
+                                    <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="1" id="rating-star-1">
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                    </span>
+                                    <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="2" id="rating-star-2">
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                    </span>
+                                    <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="3" id="rating-star-3">
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                    </span>
+                                    <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="4" id="rating-star-4">
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                    </span>
+                                    <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="5" id="rating-star-5">
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+
+                                <div class="text-center mb-2">
+                                    <textarea name="review" placeholder="What's the review regarding the rating?"></textarea>
+                                </div>
+
                                 <ul class="my-detail-footer">
-                                    <li><a class="bg-primary" title="Edit" href="javascript:;" data-bs-toggle="modal" data-bs-target="#edit-contract-modal"><i class="fa fa-pen"></i></a></li>
-                                    <li><a class="bg-success" title="Approve" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-check"></i></a></li>
-                                    <li><a class="bg-danger" title="Cancel" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'cancelled']) ?>"><i class="fa fa-times"></i></a></li>
+                                    <li><button class="bg-success" title="Completed"><i class="fa fa-check"></i></button></li>
+                                    <li><a class="bg-warning" title="Return" href="<?= ap_route('contracts.delivery-return', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-undo"></i></a></li>
                                 </ul>
-                            <?php endif ?>
-
-                            <?php if ($contract['status'] == 'approved' && $contract['provider_id'] == get_current_user_id()) : ?>
-                                <hr />
-                                <ul class="my-detail-footer">
-                                    <li><a class="bg-primary" title="Deliver" href="javascript:;" data-bs-toggle="modal" data-bs-target="#contract-delivery-modal"><i class="fa fa-box"></i></a></li>
-                                </ul>
-                            <?php endif ?>
-
-                            <?php if ($contract['status'] == 'delivered' && $contract['buyer_id'] == get_current_user_id()) : ?>
-                                <hr />
-                                <form method="post" action="<?= ap_route('contracts.delivery-action', ['contract' => $contract['id'], 'status' => 'completed']) ?>">
-                                    <span class="field-label-info"></span>
-                                    <input type="hidden" id="selected_rating" name="rating" value="">
-                                    </label>
-
-                                    <div class="text-center mb-3">
-                                        How would you rate the provider?
-
-                                        <h3 class="bold rating-header">
-                                            <span class="selected-rating">0</span><small> / 5</small>
-                                        </h3>
-                                        <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="1" id="rating-star-1">
-                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                        </span>
-                                        <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="2" id="rating-star-2">
-                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                        </span>
-                                        <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="3" id="rating-star-3">
-                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                        </span>
-                                        <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="4" id="rating-star-4">
-                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                        </span>
-                                        <span class="btnrating btn btn-secondary text-light btn-sm" data-attr="5" id="rating-star-5">
-                                            <i class="fa fa-star" aria-hidden="true"></i>
-                                        </span>
-                                    </div>
-
-                                    <div class="text-center mb-2">
-                                        <textarea name="review" placeholder="What's the review regarding the rating?"></textarea>
-                                    </div>
-
-                                    <ul class="my-detail-footer">
-                                        <li><button class="bg-success" title="Completed"><i class="fa fa-check"></i></button></li>
-                                        <li><a class="bg-warning" title="Return" href="<?= ap_route('contracts.delivery-action', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-undo"></i></a></li>
-                                    </ul>
-                                </form>
-                            <?php endif ?>
+                            </form>
+                        <?php endif ?>
                     </div>
                 </div>
             </div>
@@ -259,13 +263,15 @@
 
 <script src="<?= str_replace('/views', '', plugin_dir_url(__DIR__)) . 'js/ckeditor.js' ?>"></script>
 <script>
+    <?php if (!isset($_GET['error_message'])) : ?>
+        window.scrollTo(0, document.getElementById('activity').scrollHeight + 600);
+    <?php endif ?>
+
     ClassicEditor
         .create(document.querySelector('.editor'))
         .catch(error => {
             console.error(error);
         });
-
-    window.scrollTo(0, document.getElementById('activity').scrollHeight + 600);
 
     jQuery(document).ready(function($) {
         $(".btnrating").on('click', (function(e) {

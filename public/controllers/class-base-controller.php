@@ -35,6 +35,12 @@ class AP_Base_Controller
                 $params['_page'] = $file;
                 $params['_current_url'] = home_url($wp->request);
                 $params['_current_user'] = get_user_by('ID', get_current_user_id());
+                $params['_contracts_need_action'] = AP_Contract_Model::where(
+                    fn ($q) =>
+                    $q->where('provider_id', get_current_user_id())
+                        ->orWhere('buyer_id', get_current_user_id())
+                )->whereIn('status', ['delivered', 'pending'])
+                ->count();
 
                 ap_file_loader('public/views/layouts/main.php', $params);
             } catch (Throwable $th) {
@@ -63,7 +69,7 @@ class AP_Base_Controller
 
     public function redirectWith($uri = '/', $message = 'Request processed successfully', $status = 'success')
     {
-        $redirect = add_query_arg( $status . '_message', __($message), $uri );
+        $redirect = add_query_arg($status . '_message', __($message), $uri);
 
         $this->redirect($redirect);
     }
