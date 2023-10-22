@@ -33,15 +33,4 @@ class AP_Base_Service
     {
         $this->loader->add_action($hook, $class, $method);
     }
-
-    /**
-     * Load the service using the service class method
-     * 
-     * @param object $class A reference to the instance of the object on which the action is defined.
-     * @param string $method The name of the function definition on the $class.
-     */
-    public function add_short_code($code, $method)
-    {
-        add_shortcode($code, [$this, $method]);
-    }
 }

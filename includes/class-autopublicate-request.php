@@ -48,7 +48,7 @@ class Autopublicate_Request
 
         foreach ($rules as $key => $rulesGroup) {
             $rulesGroup = explode('|', $rulesGroup);
-            if (in_array('nullable', $rulesGroup) && (is_null($data[$key]) || ((is_array($data[$key]['tmp_name']) && !count($data[$key]['tmp_name'])) && (is_null($data[$key]['tmp_name'])) || $data[$key]['tmp_name'] == '')))
+            if (in_array('nullable', $rulesGroup) && (is_null($data[$key]) || (isset($data[$key]['tmp_name']) && (is_array($data[$key]['tmp_name']) && !count($data[$key]['tmp_name'])) && (is_null($data[$key]['tmp_name'])) || $data[$key]['tmp_name'] == '')))
                 return static::message(true, "Validated successfully");
 
             foreach ($rulesGroup as $rule) {

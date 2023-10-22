@@ -41,7 +41,7 @@
                             <div class="pb-2"><i class="fa fa-clock"></i> Budget Type: <span class="ps-2"><?= ucfirst($contract['budget_type'] ?? 'N/A') ?></span></div>
                         <?php endif ?>
 
-                        <div class="pb-2"><i class="fa fa-dollar-sign p-1"></i> Budget: <span class="ps-2">$<?= number_format($contract['budget'] ?? 0, 2) ?></span></div>
+                        <div class="pb-2"><i class="fa fa-dollar-sign p-1"></i> Budget: <span class="ps-2">€<?= number_format($contract['budget'] ?? 0, 2) ?></span></div>
                         <div class="pb-2"><i class="fa fa-clock"></i> Deadline: <span class="ps-2"><?= $contract['deadline'] ?? $contract['expected_deadline'] ?? 'N/A' ?></span></div>
                         <div class="pb-2"><i class="fa fa-info-circle"></i> Status: <span class="badge text-white bg-<?= $statusStyles[$contract['status']] ?>"><?= ucwords($contract['status']) ?></span></div>
                         <?php if ($contract['rating']) : ?>

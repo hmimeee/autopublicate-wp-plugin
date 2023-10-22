@@ -18,7 +18,7 @@
                         <div class="form-group">
                             <label for="deadline">Budget</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">€</span>
                                 <input <?= $contract['budget_type'] == 'fixed' ? 'disabled' : '' ?> type="number" step="any" name="budget" value="<?= number_format($contract['budget'] ?? 0, 2) ?>" class="form-control" />
                             </div>
                             <?php if ($contract['budget_type'] == 'fixed') : ?>

@@ -55,7 +55,7 @@
                                             </select>
                                         </div>
                                         <input type="number" step="any" name="budget" id="budget" class="form-control" placeholder="Enter your budget" value="">
-                                        <label for="budget" class="input-group-text">$</label>
+                                        <label for="budget" class="input-group-text">€</label>
                                     </div>
                                 </div>
                             </div>
