@@ -12,14 +12,14 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="deadline">Deadline</label>
-                            <input type="date" name="deadline" value="<?= $contract['deadline'] ?? $contract['expected_deadline'] ?>" class="form-control" />
+                            <input type="date" name="deadline" value="<?= request('deadline') ?? $contract['deadline'] ?? $contract['expected_deadline'] ?>" class="form-control" />
                         </div>
 
                         <div class="form-group">
                             <label for="deadline">Budget</label>
                             <div class="input-group">
                                 <span class="input-group-text">€</span>
-                                <input <?= $contract['budget_type'] == 'fixed' ? 'disabled' : '' ?> type="number" step="any" name="budget" value="<?= number_format($contract['budget'] ?? 0, 2) ?>" class="form-control" />
+                                <input <?= $contract['budget_type'] == 'fixed' ? 'disabled' : '' ?> type="number" step="any" name="budget" value="<?= request('budget') ?? number_format($contract['budget'] ?? 0, 2) ?>" class="form-control" />
                             </div>
                             <?php if ($contract['budget_type'] == 'fixed') : ?>
                                 <small class="text-danger fw-light">Client created contract with the fixed budget, can't change it.</small>
@@ -49,7 +49,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="name-field">Delivery Notes</label>
-                            <textarea id="editor" name="delivery_notes"></textarea>
+                            <textarea id="editor" name="delivery_notes"><?= request('delivery_notes') ?></textarea>
                         </div>
 
                         <div class="form-group">

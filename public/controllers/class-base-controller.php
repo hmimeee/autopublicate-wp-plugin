@@ -40,7 +40,8 @@ class AP_Base_Controller
                     $q->where('provider_id', get_current_user_id())
                         ->orWhere('buyer_id', get_current_user_id())
                 )->whereIn('status', ['delivered', 'pending'])
-                ->count();
+                    ->count();
+                session_start();
 
                 ap_file_loader('public/views/layouts/main.php', $params);
             } catch (Throwable $th) {
@@ -51,6 +52,8 @@ class AP_Base_Controller
             }
 
             get_footer();
+
+            session_destroy();
             exit;
         });
     }
@@ -69,8 +72,10 @@ class AP_Base_Controller
 
     public function redirectWith($uri = '/', $message = 'Request processed successfully', $status = 'success')
     {
-        $redirect = add_query_arg($status . '_message', __($message), $uri);
+        session_start();
+        $_SESSION[$status . '_message'] = __($message);
+        $_SESSION['_request'] = request()->all();
 
-        $this->redirect($redirect);
+        $this->redirect($uri);
     }
 }

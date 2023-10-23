@@ -28,12 +28,12 @@
                 </div>
             </nav>
 
-            <?php if (isset($_GET['success_message'])) : ?>
-                <div class="alert alert-success"><i class="fa fa-check me-1"></i> <?= $_GET['success_message'] ?></div>
+            <?php if (isset($_SESSION['success_message'])) : ?>
+                <div class="alert alert-success"><i class="fa fa-check me-1"></i> <?= $_SESSION['success_message'] ?></div>
             <?php endif; ?>
 
-            <?php if (isset($_GET['error_message'])) : ?>
-                <div class="alert alert-danger"><?= $_GET['error_message'] ?></div>
+            <?php if (isset($_SESSION['error_message'])) : ?>
+                <div class="alert alert-danger"><?= $_SESSION['error_message'] ?></div>
             <?php endif; ?>
 
             <?php file_exists(__DIR__ . '/' . $_layout . '.php') ? include_once($_layout . '.php') : include_once(plugin_dir_path(__DIR__) . $_page . '.php') ?>

@@ -17,17 +17,17 @@
 
                 <div class="form-group col-md-6">
                     <label for="email-field">Email</label>
-                    <input type="email" name="email" class="form-control" id="email-field" placeholder="Email" value="<?= $user->get('user_email') ?>">
+                    <input type="email" name="email" class="form-control" id="email-field" placeholder="Email" value="<?= request('email') ?? $user->get('user_email') ?>">
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="name-field">Full Name</label>
-                    <input type="text" name="name" class="form-control" id="name-field" placeholder="Enter your full name" value="<?= $user->get('display_name') ?>">
+                    <input type="text" name="name" class="form-control" id="name-field" placeholder="Enter your full name" value="<?= request('name') ?? $user->get('display_name') ?>">
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="name-field">Nickname</label>
-                    <input type="text" name="nickname" class="form-control" id="name-field" placeholder="Enter your nickname" value="<?= $user->get('user_nicename') ?>">
+                    <input type="text" name="nickname" class="form-control" id="name-field" placeholder="Enter your nickname" value="<?= request('nickname') ?? $user->get('user_nicename') ?>">
                 </div>
 
                 <div class="form-group col-md-6">
@@ -35,34 +35,34 @@
                     <select name="country" id="country-field" class="form-control">
                         <option value="" selected>Choose...</option>
                         <?php foreach ($countries as $country) : ?>
-                            <option value="<?= $country['name'] ?>" <?= $user->get('country') == $country['name'] ? 'selected' : '' ?>><?= $country['name'] ?></option>
+                            <option value="<?= $country['name'] ?>" <?= (request('country') ?? $user->get('country')) == $country['name'] ? 'selected' : '' ?>><?= $country['name'] ?></option>
                         <?php endforeach ?>
                     </select>
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="profession_title-field">Profession Title</label>
-                    <input type="text" name="profession_title" class="form-control" id="profession_title-field" placeholder="Eg.: Software Engineer" value="<?= $user->get('profession_title') ?>">
+                    <input type="text" name="profession_title" class="form-control" id="profession_title-field" placeholder="Eg.: Software Engineer" value="<?= request('profession_title') ?? $user->get('profession_title') ?>">
                 </div>
 
                 <div class="form-group col-md-12">
                     <label for="skills-field">Skills</label>
-                    <input type="text" name="skills" class="form-control" id="skills-field" placeholder="Enter skills seperated by comma (,)" value="<?= $user->get('skills') ?>">
+                    <input type="text" name="skills" class="form-control" id="skills-field" placeholder="Enter skills seperated by comma (,)" value="<?= request('skills') ?? $user->get('skills') ?>">
                 </div>
 
                 <div class="form-group col-md-12">
                     <label for="languages-field">Languages</label>
-                    <input type="text" name="languages" class="form-control" id="languages-field" placeholder="Enter languages seperated by comma (,)" value="<?= $user->get('languages') ?>">
+                    <input type="text" name="languages" class="form-control" id="languages-field" placeholder="Enter languages seperated by comma (,)" value="<?= request('languages') ?? $user->get('languages') ?>">
                 </div>
 
                 <div class="form-group col-md-12">
                     <label for="about-field">About (300 characters)</label>
-                    <textarea name="about" maxlength="300" class="form-control" id="about-field" placeholder="Write short description about yourself" rows="4"><?= $user->get('about') ?></textarea>
+                    <textarea name="about" maxlength="300" class="form-control" id="about-field" placeholder="Write short description about yourself" rows="4"><?= request('about') ?? $user->get('about') ?></textarea>
                 </div>
 
                 <div class="form-group col-md-12">
                     <label for="name-field">Professional Description</label>
-                    <textarea id="editor" name="professional_description"><?= $user->get('professional_description') ?></textarea>
+                    <textarea id="editor" name="professional_description"><?= request('professional_description') ?? $user->get('professional_description') ?></textarea>
                 </div>
 
                 <div class="form-group">

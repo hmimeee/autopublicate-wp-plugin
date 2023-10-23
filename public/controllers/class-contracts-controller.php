@@ -56,8 +56,6 @@ class AP_Contracts_Controller extends AP_Base_Controller
         $validate = request()->validate([
             'title' => 'string|min:5',
             'description' => 'nullable|string',
-            'budget_type' => 'required|in:fixed,estimated',
-            'budget' => 'required|numeric|min:1',
             'expected_deadline' => 'required|date:Y-m-d'
         ]);
 
@@ -70,7 +68,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
             return ap_abort();
         }
 
-        $data = request()->only('title', 'expected_deadline', 'budget', 'budget_type');
+        $data = request()->only('title', 'expected_deadline');
         $data['description'] = htmlentities(stripslashes(request('description')));
         $data['provider_id'] = $provider->get('ID');
         $data['buyer_id'] = get_current_user_id();
@@ -143,6 +141,8 @@ class AP_Contracts_Controller extends AP_Base_Controller
             );
             $query = new WP_Query($args);
             $contract['delivery_attachments'] = $query->get_posts();
+        } else {
+            $contract['delivery_attachments'] = [];
         }
 
         $title = 'Contract: ' . $contract['title'];
@@ -181,6 +181,15 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
     public function modify($contractId)
     {
+        $validate = request()->validate([
+            'deadline' => 'required|date:Y-m-d',
+            'budget' => 'required|numeric|min:1',
+        ]);
+
+        if (!$validate['status']) {
+            return $this->redirectWith(ap_route('contracts.show', $contractId), $validate['message'], 'error');
+        }
+
         $user_id = get_current_user_id();
         $contract = AP_Contract_Model::where(fn ($q) => $q->where('provider_id', $user_id)->orWhere('buyer_id', $user_id))->find($contractId);
         if (!$contract) {

@@ -36,7 +36,7 @@
                             </div>
                         <?php endif ?>
                         <hr />
-                        
+
                         <?php if ($contract['status'] == 'pending') : ?>
                             <div class="pb-2"><i class="fa fa-clock"></i> Budget Type: <span class="ps-2"><?= ucfirst($contract['budget_type'] ?? 'N/A') ?></span></div>
                         <?php endif ?>
@@ -76,11 +76,11 @@
 
                         <?php if (($contract['status'] == 'pending' && $contract['provider_id'] == get_current_user_id()) || ($contract['status'] == 'modified' && $contract['modified_by'] == $user->get('ID'))) : ?>
                             <hr />
-                            <ul class="my-detail-footer">
-                                <li><a class="bg-primary" title="Edit" href="javascript:;" data-bs-toggle="modal" data-bs-target="#edit-contract-modal"><i class="fa fa-pen"></i></a></li>
-                                <li><a class="bg-success" title="Approve" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-check"></i></a></li>
-                                <li><a class="bg-danger" title="Cancel" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'cancelled']) ?>"><i class="fa fa-times"></i></a></li>
-                            </ul>
+                            <div class="text-center">
+                                <a class="btn btn-sm btn-success text-white fw-bold" title="Accept" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-check"></i> Accept</a>
+                                <button class="btn btn-sm btn-primary fw-bold" title="Edit" href="javascript:;" data-bs-toggle="modal" data-bs-target="#edit-contract-modal"><i class="fa fa-pen"></i> Modify</button>
+                                <a class="btn btn-sm btn-danger text-white fw-bold" title="Cancel" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'cancelled']) ?>"><i class="fa fa-times"></i> Cancel</a>
+                            </div>
                         <?php endif ?>
 
                         <?php if ($contract['status'] == 'approved' && $contract['provider_id'] == get_current_user_id()) : ?>
@@ -136,23 +136,20 @@
             <br />
             <div class="page-body">
                 <div class="sub-title">
-                    <h2>Provider Details</h2>
+                    <h2><?= $user->get('ID') != $contract['provider_id'] ? 'Buyer' : 'Provider' ?> Details</h2>
                 </div>
 
-                <div class="content-page pt-1">
-                    <div class="ps-4">
-                        <div class="d-flex align-items-center">
-                            <img width="120px" src="<?= $user->get('image') ?: "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
-
-                            <div class="p-3 pt-1">
-                                <a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">
-                                    <h2><?= ucwords($user->get('display_name')) ?></h2>
-                                </a>
-                                <div><i class="fa fa-map-marker"></i> <?= $user->get('country') ?? 'N/A' ?></div>
-                                <div><i class="fa fa-comment"></i> I speak <?= $user->get('languages') ? implode(', ', explode(',', $user->get('languages'))) : 'N/A' ?></div>
-                                <div><i class="fa fa-archive"></i> <?= $user->completed_count ?> contracts completed</div>
-                            </div>
-                        </div>
+                <div class="content-page p-3">
+                    <div>
+                        <img class="rounded" width="150" src="<?= $user->get('image') ?: "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
+                    </div>
+                    <div>
+                        <a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">
+                            <h2><?= ucwords($user->get('display_name')) ?></h2>
+                        </a>
+                        <div><i class="fa fa-map-marker"></i> <?= $user->get('country') ?? 'N/A' ?></div>
+                        <div><i class="fa fa-comment"></i> I speak <?= $user->get('languages') ? implode(', ', explode(',', $user->get('languages'))) : 'N/A' ?></div>
+                        <div><i class="fa fa-archive"></i> <?= $user->completed_count ?> contracts completed</div>
                     </div>
                 </div>
             </div>
@@ -206,14 +203,17 @@
                             </div>
                         </div>
                         <div class="mt-2 p-3 rounded text-break <?= get_current_user_id() == $contract['provider_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
-                            <?= html_entity_decode($contract['delivery_notes']) ?>
-                            <hr class="dotted mb-1" />
-                            <div class="pb-2 small">Attachments:</div>
-                            <div>
-                                <?php foreach ($contract['delivery_attachments'] ?? [] as $attachment) : ?>
-                                    <a class="badge <?= get_current_user_id() == $contract['provider_id'] ? 'bg-light' : 'bg-primary text-white' ?>" href="<?= $attachment->guid ?>" target="_blank"><i class="fa fa-paperclip"></i> <?= basename($attachment->guid) ?></a>
-                                <?php endforeach ?>
-                            </div>
+                            <?= html_entity_decode($contract['delivery_notes']) ?? 'Delivered the contract' ?>
+
+                            <?php if (count($contract['delivery_attachments'])) : ?>
+                                <hr class="dotted mb-1" />
+                                <div class="pb-2 small">Attachments:</div>
+                                <div>
+                                    <?php foreach ($contract['delivery_attachments'] as $attachment) : ?>
+                                        <a class="badge <?= get_current_user_id() == $contract['provider_id'] ? 'bg-light' : 'bg-primary text-white' ?>" href="<?= $attachment->guid ?>" target="_blank"><i class="fa fa-paperclip"></i> <?= basename($attachment->guid) ?></a>
+                                    <?php endforeach ?>
+                                </div>
+                            <?php endif ?>
                         </div>
                     </div>
                 <?php endif ?>

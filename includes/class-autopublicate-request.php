@@ -13,7 +13,9 @@ class Autopublicate_Request
         $post = $_POST;
         $get = $_GET;
         $file = $_FILES;
-        $this->data = array_merge($get, $post, $file);
+        $session = $_SESSION['_request'] ?? [];
+        
+        $this->data = array_merge($get, $post, $file, $session);
 
         foreach ($this->data as $key => $value) {
             $this->$key = $value;
@@ -96,11 +98,11 @@ class Autopublicate_Request
             if (strrpos($this->rules[$rawKey], 'numeric')  && is_numeric($data)) {
                 $min = intval(end($explode_rule));
                 if (reset($explode_rule) == 'min' && intval($data) < $min)
-                    return static::message(false, "$key should not be less than " . $min . " characters");
+                    return static::message(false, "$key must be grater than or equal to $min");
 
                 $max = intval(end($explode_rule));
                 if (reset($explode_rule) == 'max' && intval($data) > $max)
-                    return static::message(false, "$key should not be grater than " . $max . " characters");
+                    return static::message(false, "$key should not be grater than $max");
             } elseif (is_string($data)) {
                 $min = intval(end($explode_rule));
                 if (reset($explode_rule) == 'min' && strlen($data) < $min)

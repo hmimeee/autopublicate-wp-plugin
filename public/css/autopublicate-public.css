@@ -1081,7 +1081,7 @@ blockquote {
 
 button.btn {
     border-radius: 5px;
-    padding: 0.375rem 0.75rem;
+    padding: 0.35rem 0.6rem;
 }
 
 .btn-outline-secondary {
@@ -1110,6 +1110,10 @@ button.btn {
     background-color: #FF6C54 !important;
     color: #FFF !important;
     border-color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: #fe4427 !important;
 }
 
 .btn-outline-primary {
