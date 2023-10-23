@@ -101,10 +101,10 @@ if (!function_exists('ap_is_route')) {
         global $current_route;
         if ($has_multiple && is_array($route_name)) {
             $routeUris = [];
-            array_walk($route_name, function ($route, $key) use(&$routeUris) {
+            array_walk($route_name, function ($route, $key) use (&$routeUris) {
                 $routeUris[] = is_array($route) || is_string($key) ? ap_route($key, $route) : ap_route($route);
             });
-            
+
             return in_array(site_url($current_route['parsed_uri']), $routeUris);
         } else {
             $routeUri = ap_route($route_name, $params);
@@ -302,9 +302,18 @@ if (!function_exists('ap_send_mail')) {
             $body['params']['subject'] = $subject;
             foreach ($body['params'] as $var => $value) $content = str_replace("[$var]", $value, $content);
         }
-        $headers = array('Content-Type: text/html; charset=UTF-8');
+        $headers = array('From: Autopublícate® <noreply@autopublicate.com>');
 
-        return wp_mail($to, $subject, $content, $headers);
+        add_filter('wp_mail_content_type', 'set_html_content_type');
+        $sent = wp_mail($to, $subject, $content, $headers);
+        remove_filter('wp_mail_content_type', 'set_html_content_type');
+
+        return $sent;
+    }
+
+    function set_html_content_type($content_type)
+    {
+        return 'text/html';
     }
 }
 
