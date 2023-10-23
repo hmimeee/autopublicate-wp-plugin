@@ -37,6 +37,16 @@ class AP_Profile_Controller extends AP_Base_Controller
 
     public function update()
     {
+        $validate = request()->validate([
+            'image' => 'nullable|file|max:256',
+            'name' => 'required|string|min:5',
+            'profession_title' => 'required|string|min:5'
+        ]);
+
+        if (!$validate['status']) {
+            return $this->redirectWith(ap_route('profile.edit'), $validate['message'], 'error');
+        }
+
         if ($this->user->get('user_login') != request('username')) {
             return $this->redirectWith(ap_route('profile.edit'), 'Invalid request sent', 'error');
         }
@@ -49,7 +59,6 @@ class AP_Profile_Controller extends AP_Base_Controller
             return $this->redirectWith(ap_route('profile.edit'), 'Invalid email address', 'error');
         }
 
-
         $data = [
             'display_name' => request('name'),
             'user_nicename' => request('nickname'),
@@ -60,6 +69,15 @@ class AP_Profile_Controller extends AP_Base_Controller
             'professional_description' => request('professional_description') ? htmlentities(stripslashes(request('professional_description'))) : null,
             'about' => request('about') ? strip_tags(stripslashes(request('about'))) : null
         ];
+
+        if (request('image')['tmp_name']) {
+            $upload = request()->file('image')->store();
+            if (!$upload['status']) {
+                return $this->redirectWith(ap_route('profile.edit'), $upload['message'], 'error');
+            }
+            
+            $data['image'] = $upload['data'];
+        }
 
         if (request('email') != $this->user->get('user_email')) {
             $exists = get_user_by('email', request('email'));

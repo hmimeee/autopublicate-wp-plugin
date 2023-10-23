@@ -9,10 +9,10 @@
                 <?php wp_nonce_field(); ?>
                 <div class="row pb-4">
                     <div class="col-md-3 border-end">
-                        <img width="120px" src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
+                        <img width="120px" src="<?= $user->get('image') ?: "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
                         <div class="pt-1">
                             <a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">
-                                <h2><?= ucwords($user->get('user_nicename')) ?></h2>
+                                <h2><?= ucwords($user->get('display_name')) ?></h2>
                             </a>
                             <div class="mb-2"><i class="fa fa-map-marker"></i> <?= $user->get('country') ?: 'N/A' ?></div>
                             <div class="mb-2"><i class="fa fa-archive"></i> <?= $user->completed_count ?> contracts completed</div>

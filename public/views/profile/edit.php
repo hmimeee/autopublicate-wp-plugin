@@ -4,9 +4,11 @@
 
 <div class="content-page pt-2">
     <div class="ps-4 pe-4">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
+            <?php wp_nonce_field(); ?>
             <div class="row">
                 <input type="hidden" name="username" value="<?= $user->get('user_login') ?>" />
+                <input type="file" name="image" id="avatar-input" style="height: 0;" />
 
                 <div class="form-group col-md-6">
                     <label for="username-field">Username</label>

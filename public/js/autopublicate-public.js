@@ -50,6 +50,20 @@
          $(".navbar-collapse").slideToggle(1);
          setTimeout(function () { activeNavMenu(); }, 10);
       });
+
+      $('#avatar-input-init').on('change', (e) => {
+         let input = e.target;
+         if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+               $('#avatar').attr('src', e.target.result);
+               document.getElementById('avatar-input').files = input.files;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+         }
+      });
    });
 
 })(jQuery);

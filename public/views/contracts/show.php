@@ -63,10 +63,10 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
-                                        <img class="rounded-circle" src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>">
+                                        <img class="rounded-circle" src="<?= $pendingUnder->get('image') ?: "https://ui-avatars.com/api/?name=" . $pendingUnder->get('display_name') ?>">
 
                                         <div class="ms-2">
-                                            <h5 class="mb-0"><?= $pendingUnder->get('user_nicename') ?> (<small><?= $pendingUnder->get('user_login') ?></small>)</h5>
+                                            <h5 class="mb-0"><?= $pendingUnder->get('display_name') ?> (<small><?= $pendingUnder->get('user_login') ?></small>)</h5>
                                             <i class="fa fa-briefcase me-1"></i> <?= $pendingUnder->get('profession_title') ?: 'N/A' ?>
                                         </div>
                                     </div>
@@ -142,11 +142,11 @@
                 <div class="content-page pt-1">
                     <div class="ps-4">
                         <div class="d-flex align-items-center">
-                            <img width="120px" src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
+                            <img width="120px" src="<?= $user->get('image') ?: "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
 
                             <div class="p-3 pt-1">
                                 <a href="<?= ap_route('user_profile', $user->get('user_login')) ?>">
-                                    <h2><?= ucwords($user->get('user_nicename')) ?></h2>
+                                    <h2><?= ucwords($user->get('display_name')) ?></h2>
                                 </a>
                                 <div><i class="fa fa-map-marker"></i> <?= $user->get('country') ?? 'N/A' ?></div>
                                 <div><i class="fa fa-comment"></i> I speak <?= $user->get('languages') ? implode(', ', explode(',', $user->get('languages'))) : 'N/A' ?></div>
@@ -168,9 +168,9 @@
             <div class="content-page p-3 d-flex flex-column" id="activity">
                 <div>
                     <div class="d-flex flex-row <?= get_current_user_id() == $contract['buyer_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                        <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('user_nicename') ?>">
+                        <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('display_name') ?>">
                         <div class="d-flex flex-column justify-content-start">
-                            <span class="d-block fw-bold"><?= $contract['buyer']->get('user_nicename') ?></span>
+                            <span class="d-block fw-bold"><?= $contract['buyer']->get('display_name') ?></span>
                             <span class="date text-black-50"><?= ap_date_format($contract['created_at'], 'd M \a\t h:i a') ?></span>
                         </div>
                     </div>
@@ -183,9 +183,9 @@
                     <hr class="dotted" />
                     <div>
                         <div class="d-flex flex-row <?= get_current_user_id() == $comment['user_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                            <img class="rounded-circle <?= get_current_user_id() == $comment['user_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $comment['user']->get('display_name') ?>" width="50" alt="<?= $comment['user']->get('user_nicename') ?>">
+                            <img class="rounded-circle <?= get_current_user_id() == $comment['user_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $comment['user']->get('display_name') ?>" width="50" alt="<?= $comment['user']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
-                                <span class="d-block fw-bold"><?= $comment['user']->get('user_nicename') ?></span>
+                                <span class="d-block fw-bold"><?= $comment['user']->get('display_name') ?></span>
                                 <span class="date text-black-50"><?= ap_date_format($comment['created_at'], 'd M \a\t h:i a') ?></span>
                             </div>
                         </div>
@@ -199,9 +199,9 @@
                     <hr class="dotted" />
                     <div>
                         <div class="d-flex flex-row <?= get_current_user_id() == $contract['provider_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                            <img class="rounded-circle <?= get_current_user_id() == $contract['provider_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['provider']->get('display_name') ?>" width="50" alt="<?= $contract['provider']->get('user_nicename') ?>">
+                            <img class="rounded-circle <?= get_current_user_id() == $contract['provider_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['provider']->get('display_name') ?>" width="50" alt="<?= $contract['provider']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
-                                <span class="d-block fw-bold"><?= $contract['provider']->get('user_nicename') ?></span>
+                                <span class="d-block fw-bold"><?= $contract['provider']->get('display_name') ?></span>
                                 <span class="date text-black-50"><?= ap_date_format($contract['delivered_at'], 'd M \a\t h:i a') ?></span>
                             </div>
                         </div>
@@ -222,9 +222,9 @@
                     <hr class="dotted" />
                     <div>
                         <div class="d-flex flex-row <?= get_current_user_id() == $contract['buyer_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                            <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('user_nicename') ?>">
+                            <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
-                                <span class="d-block fw-bold"><?= $contract['buyer']->get('user_nicename') ?></span>
+                                <span class="d-block fw-bold"><?= $contract['buyer']->get('display_name') ?></span>
                                 <span class="date text-black-50"><?= ap_date_format($contract['completed_at'], 'd M \a\t h:i a') ?></span>
                             </div>
                         </div>

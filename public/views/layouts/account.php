@@ -3,9 +3,10 @@
     <div class="col-md-4">
         <div>
             <div class="my-pic position-relative">
-                <img id="avatar" src="<?= "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
+                <img id="avatar" src="<?= $user->get('image') ?: "https://ui-avatars.com/api/?name=" . $user->get('display_name') ?>" alt="<?= $user->get('display_name') ?>">
                 <?php if (ap_is_route('profile.edit')) : ?>
-                    <button id="avatar-change" class="btn btn-xs btn-secondary position-absolute top-0 end-0 m-2"><i class="fa fa-camera"></i></button>
+                    <label for="avatar-input-init" id="avatar-change" class="btn btn-secondary position-absolute top-0 end-0 m-2"><i class="fa fa-camera"></i></label>
+                    <input type="file" class="d-none" id="avatar-input-init" />
                 <?php endif ?>
             </div>
 
