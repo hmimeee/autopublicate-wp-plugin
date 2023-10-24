@@ -36,7 +36,7 @@
                             <td scope="row"><?= ++$i ?></td>
                             <td><?= strlen($contract['title']) > 50 ? substr($contract['title'], 0, 50) . '...' : $contract['title'] ?></td>
                             <td><?= $contract['budget'] ? '€' . number_format($contract['budget'], 2) : 'N/A' ?></td>
-                            <td><?= $contract['deadline'] ?></td>
+                            <td><?= $contract['deadline'] ?? $contract['expected_deadline'] ?></td>
                             <td><span class="<?= in_array($contract['status'], ['pending', 'delivered']) ? 'p-2 rounded text-white glowing' : '' ?>"><?= ucwords($contract['status']) ?></span></td>
                             <td>
                                 <div class="btn-group">

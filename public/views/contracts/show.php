@@ -41,7 +41,7 @@
                             <div class="pb-2"><i class="fa fa-clock"></i> Budget Type: <span class="ps-2"><?= ucfirst($contract['budget_type'] ?? 'N/A') ?></span></div>
                         <?php endif ?>
 
-                        <div class="pb-2"><i class="fa fa-dollar-sign p-1"></i> Budget: <span class="ps-2">€<?= number_format($contract['budget'] ?? 0, 2) ?></span></div>
+                        <div class="pb-2"><i class="fa fa-euro-sign p-1"></i> Budget: <span class="ps-2">€<?= number_format($contract['budget'] ?? 0, 2) ?></span></div>
                         <div class="pb-2"><i class="fa fa-clock"></i> Deadline: <span class="ps-2"><?= $contract['deadline'] ?? $contract['expected_deadline'] ?? 'N/A' ?></span></div>
                         <div class="pb-2"><i class="fa fa-info-circle"></i> Status: <span class="badge text-white bg-<?= $statusStyles[$contract['status']] ?>"><?= ucwords($contract['status']) ?></span></div>
                         <?php if ($contract['rating']) : ?>
@@ -60,15 +60,15 @@
                         <?php if (isset($pendingUnder) && $pendingUnder->get('ID') != get_current_user_id()) : ?>
                             <hr />
                             <div class="pb-2"><i class="fa fa-user"></i> Pending Under:</div>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <img class="rounded-circle" src="<?= $pendingUnder->get('image') ?: "https://ui-avatars.com/api/?name=" . $pendingUnder->get('display_name') ?>">
+                            <div class="row">
+                                <div class="col-lg-4 d-flex justify-content-lg-center">
+                                    <img width="100" class="rounded" src="<?= $pendingUnder->get('image') ?: "https://ui-avatars.com/api/?name=" . $pendingUnder->get('display_name') ?>">
+                                </div>
 
-                                        <div class="ms-2">
-                                            <h5 class="mb-0"><?= $pendingUnder->get('display_name') ?> (<small><?= $pendingUnder->get('user_login') ?></small>)</h5>
-                                            <i class="fa fa-briefcase me-1"></i> <?= $pendingUnder->get('profession_title') ?: 'N/A' ?>
-                                        </div>
+                                <div class="col-lg-8 d-flex flex-column justify-content-center">
+                                    <h5 class="mb-1"><?= $pendingUnder->get('display_name') ?> (<small><?= $pendingUnder->get('user_login') ?></small>)</h5>
+                                    <div>
+                                        <i class="fa fa-briefcase me-1"></i> <?= $pendingUnder->get('profession_title') ?: 'N/A' ?>
                                     </div>
                                 </div>
                             </div>
