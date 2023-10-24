@@ -85,9 +85,9 @@
 
                         <?php if ($contract['status'] == 'approved' && $contract['provider_id'] == get_current_user_id()) : ?>
                             <hr />
-                            <ul class="my-detail-footer">
-                                <li><a class="bg-primary" title="Deliver" href="javascript:;" data-bs-toggle="modal" data-bs-target="#contract-delivery-modal"><i class="fa fa-box"></i></a></li>
-                            </ul>
+                            <div class="text-center">
+                                <a class="btn btn-sm fw-bold <?= $contract['deadline'] == date('Y-m-d') ? 'bg-danger text-white glowing border-0' : 'btn-primary' ?>" title="Deliver" href="javascript:;" data-bs-toggle="modal" data-bs-target="#contract-delivery-modal"><i class="fa fa-box"></i> Deliver Now</a></li>
+                            </div>
                         <?php endif ?>
 
                         <?php if ($contract['status'] == 'delivered' && $contract['buyer_id'] == get_current_user_id()) : ?>
