@@ -1,4 +1,7 @@
 <?php
+
+use Stripe\StripeClient;
+
 class AP_Contracts_Controller extends AP_Base_Controller
 {
     public function index()
@@ -151,9 +154,10 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'pending' => 1,
             'modified' => 2,
             'approved' => 3,
-            'delivered' => 4,
-            'completed' => 5,
-            'cleared' => 6
+            'inprogress' => 4,
+            'delivered' => 5,
+            'completed' => 6,
+            'cleared' => 7
         ];
 
         $statusStyles = [
@@ -226,6 +230,160 @@ class AP_Contracts_Controller extends AP_Base_Controller
         return $this->redirectWith(ap_route('contracts.show', $contractId), 'Contract submitted as modified, please wait till other parties to approve');
     }
 
+    public function payment($contractId)
+    {
+        $validate = request()->validate([
+            'gateway' => 'required|in:stripe,paypal',
+        ]);
+
+        if (!$validate['status']) {
+            return $this->redirectWith(ap_route('contracts.show', $contractId), $validate['message'], 'error');
+        }
+
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where('buyer_id', $user_id)->find($contractId);
+
+        if (!$contract || $contract['status'] != 'approved' || $contract['status'] == 'inprogress') {
+            return ap_abort();
+        }
+
+        switch (request('gateway')) {
+            case 'paypal':
+                $data = $this->paypalPayment($contract);
+                break;
+
+            default:
+                $data = $this->stripePayment($contract);
+                break;
+        }
+
+        $transaction = AP_Transaction_Model::where('contract_id', $contract['id'])->one();
+        if ($transaction) {
+            AP_Transaction_Model::query()->update([
+                'gateway' => request('gateway'),
+                'gateway_id' => $data['id'],
+                'amount' => $contract['budget'],
+                'updated_at' => ap_date_format()
+            ])->where('contract_id', $contractId)->execute();;
+        } else {
+            AP_Transaction_Model::query()->insert([
+                'from_user_id' => $user_id,
+                'user_id' => $contract['provider_id'],
+                'contract_id' => $contract['id'],
+                'description' => $contract['title'],
+                'amount' => $contract['budget'],
+                'gateway' => request('gateway'),
+                'gateway_id' => $data['id'],
+                'created_at' => ap_date_format()
+            ])->execute();
+        }
+
+        return $this->redirect($data['url']);
+    }
+
+    public function stripePayment($contract)
+    {
+        $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
+
+        $price = $stripe->prices->create([
+            'currency' => 'eur',
+            'unit_amount' => $contract['budget'] * 100,
+            'product_data' => [
+                'name' => 'Contract: ' . $contract['title'],
+                'metadata' => [
+                    'id' => $contract['id'],
+                    'buyer_id' => $contract['buyer_id'],
+                    'provider_id' => $contract['provider_id'],
+                    'budget' => $contract['budget'],
+                    'deadline' => $contract['deadline']
+                ]
+            ]
+        ]);
+
+        $session = $stripe->checkout->sessions->create([
+            'line_items' => [[
+                'price' => $price['id'],
+                'quantity' => 1
+            ]],
+            'success_url' => ap_route('contracts.payment.complete', $contract['id']),
+            'mode' => 'payment'
+        ]);
+
+        return [
+            'id' => $session->id,
+            'url' => $session->url
+        ];
+    }
+
+    public function paypalPayment($contract)
+    {
+        $paypal = new AP_PayPal_Service;
+        $paypal->checkout($contract['budget'], ap_route('contracts.payment.complete', $contract['id']), ap_route('contracts.show', $contract['id']));
+
+        $price = $stripe->prices->create([
+            'currency' => 'usd',
+            'unit_amount' => $contract['budget'],
+            'product_data' => [
+                'name' => 'Test'
+            ]
+        ]);
+
+        $payment = $stripe->paymentLinks->create([
+            'line_items' => [[
+                'price' => $price['id'],
+                'quantity' => 1
+            ]]
+        ]);
+
+        return $this->redirect($payment['url']);
+    }
+
+    public function paymentComplete($contractId)
+    {
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where('buyer_id', $user_id)->find($contractId);
+        $transaction = AP_Transaction_Model::where('contract_id', $contractId)->one();
+
+        if (!$contract || !$transaction) {
+            return ap_abort();
+        }
+
+        switch ($transaction['gateway']) {
+            case 'paypal':
+                $paymentStatus = $this->paypalConfirm($transaction);
+                break;
+
+            default:
+                $paymentStatus = $this->stripeConfirm($transaction);
+                break;
+        }
+
+        AP_Contract_Model::query()->update([
+            'status' => $paymentStatus == 'paid' ? 'inprogress' : 'approved',
+            'updated_at' => ap_date_format()
+        ])->where('id', $contractId)->execute();
+
+        AP_Transaction_Model::query()->update([
+            'status' => $paymentStatus,
+            'updated_at' => ap_date_format()
+        ])->where('contract_id', $contractId)->execute();;
+
+        $messages = [
+            'paid' => 'Congrats, the payment was successful. Please wait till the provider deliver the work.',
+            'failed' => 'Sorry, the payment was unsuccessful. Please try again.'
+        ];
+
+        return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$paymentStatus], $paymentStatus != 'paid' ? 'error' : 'success');
+    }
+
+    public function stripeConfirm($transaction)
+    {
+        $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
+        $session = $stripe->checkout->sessions->retrieve($transaction['gateway_id']);
+
+        return $session->payment_status == 'paid' ? 'paid' : 'failed';
+    }
+
     public function statusUpdate($contractId, $status)
     {
         $user_id = get_current_user_id();
@@ -255,21 +413,32 @@ class AP_Contracts_Controller extends AP_Base_Controller
             ->execute();
 
         $messages = [
-            'approved' => 'Good news, the contract has started',
+            'approved' => 'Good news, the contract has approved',
             'cancelled' => 'The contract has been cancelled'
         ];
 
-        $user = AP_User_Model::find($user_id);
-        $notifiable = AP_User_Model::find($user_id != $contract['provider_id'] ? $contract['provider_id'] : $contract['buyer_id']);
+        $provider = AP_User_Model::find($contract['provider_id']);
+        $buyer = AP_User_Model::find($contract['buyer_id']);
 
-        ap_send_mail($notifiable->get('email'), $user->get('user_nicename') . ' has ' . $status . ' a contract', [
+        ap_send_mail($provider->get('email'), 'The contract has approved', [
             'path' => 'public/views/mails/common',
             'params' => [
-                'name' => $notifiable->get('user_nicename'),
+                'name' => $provider->get('user_nicename'),
                 'action' => 'See Details',
                 'action_url' => ap_route('contracts.show', $contractId),
-                'body_first' => $messages[$status],
-                'body_second' => 'The contract status updated by ' . $user->get('user_nicename')
+                'body_first' => $messages[$status] . '. Please wait till buyer make the payment for the contract. We\'ll notify you as soon as we got the payment.',
+                'body_second' => 'Please don\'t start working before the payment.'
+            ]
+        ]);
+
+        ap_send_mail($buyer->get('email'), 'The contract has approved', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $buyer->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => $messages[$status] . '. Please make the payment to start the contract.',
+                'body_second' => 'The provider will not start until you make the payment.'
             ]
         ]);
 
@@ -344,6 +513,12 @@ class AP_Contracts_Controller extends AP_Base_Controller
         ])
             ->where('id', $contract['id'])
             ->execute();
+
+        if ($status == 'completed') {
+            AP_User_Model::query()->update([
+                'balance' => $contract['budget']
+            ])->where('ID', $contract['provider_id'])->execute();
+        }
 
         $messages = [
             'approved' => 'The contract has returned to the provider',

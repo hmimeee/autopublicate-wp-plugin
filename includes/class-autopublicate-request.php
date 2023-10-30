@@ -14,7 +14,7 @@ class Autopublicate_Request
         $get = $_GET;
         $file = $_FILES;
         $session = $_SESSION['_request'] ?? [];
-        
+
         $this->data = array_merge($get, $post, $file, $session);
 
         foreach ($this->data as $key => $value) {
@@ -95,7 +95,15 @@ class Autopublicate_Request
             return static::message(false, "$key must be a file");
         } else if (count($explode_rule) > 1) {
 
-            if (strrpos($this->rules[$rawKey], 'numeric')  && is_numeric($data)) {
+            if (reset($explode_rule) == 'date') {
+                $format = end($explode_rule);
+                if ($data != date($format, strtotime($data))) static::message(false, "$key field must have the date format '$format'");
+            } else if (reset($explode_rule) == 'in') {
+                $allowed_values = explode(',', end($explode_rule));
+
+                if (!in_array($data, $allowed_values))
+                    return static::message(false, "$key allowed values are: " . end($explode_rule));
+            } else if (strrpos($this->rules[$rawKey], 'numeric')  && is_numeric($data)) {
                 $min = intval(end($explode_rule));
                 if (reset($explode_rule) == 'min' && intval($data) < $min)
                     return static::message(false, "$key must be grater than or equal to $min");
@@ -103,7 +111,7 @@ class Autopublicate_Request
                 $max = intval(end($explode_rule));
                 if (reset($explode_rule) == 'max' && intval($data) > $max)
                     return static::message(false, "$key should not be grater than $max");
-            } elseif (is_string($data)) {
+            } else if (is_string($data)) {
                 $min = intval(end($explode_rule));
                 if (reset($explode_rule) == 'min' && strlen($data) < $min)
                     return static::message(false, "$key should not be less than " . $min . " characters");
@@ -123,14 +131,6 @@ class Autopublicate_Request
                     else if (reset($explode_rule) == 'min' && $size < ($limit * 1024))
                         return static::message(false, "$key minimum upload size is {$convertedSize}");
                 }
-            } else if (reset($explode_rule) == 'date') {
-                $format = end($explode_rule);
-                if ($data != date($format, strtotime($data))) static::message(false, "$key field must have the date format '$format'");
-            } else if (reset($explode_rule) == 'in') {
-                $allowed_values = explode(',', end($explode_rule));
-
-                if (!in_array($data, $allowed_values))
-                    return static::message(false, "$key allowed values are: " . end($explode_rule));
             }
         }
 
@@ -193,7 +193,7 @@ class Autopublicate_Request
         if (is_array(reset($this->files))) return false;
 
         $time = current_time('mysql');
-        $file = wp_handle_upload($this->files, array( 'test_form' => false ), $time);
+        $file = wp_handle_upload($this->files, array('test_form' => false), $time);
 
         if (isset($file['error'])) {
             return ['status' => false, 'message' => $file['error']];

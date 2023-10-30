@@ -7,8 +7,8 @@
             </ul>
         <?php else : ?>
             <ul id="progressbar">
-                <li class="col-3 <?= $progressSequences[$contract['status']] > 2 ? 'active' : 'pending' ?>"><?= $progressSequences[$contract['status']] > 2 ? 'Approved' : 'Pending Approval' ?></li>
-                <li class="col-3 <?= $progressSequences[$contract['status']] > 3 ? 'active' : ($contract['status'] == 'approved' ? 'pending' : '') ?>">Working</li>
+                <li class="col-3 <?= $progressSequences[$contract['status']] > 3 ? 'active' : 'pending' ?>"><?= $progressSequences[$contract['status']] > 2 ? ($contract['status'] == 'approved' ? 'Payment Required' : 'Paid') : 'Pending Approval' ?></li>
+                <li class="col-3 <?= $progressSequences[$contract['status']] > 4 ? 'active' : ($contract['status'] == 'inprogress' ? 'pending' : '') ?>">Working</li>
                 <li class="col-3 <?= $progressSequences[$contract['status']] > 4 ? 'active' : ($contract['status'] == 'delivered' ? 'pending' : '') ?>">Delivered</li>
                 <li class="col-3 <?= $progressSequences[$contract['status']] >= 5 ? 'active' : '' ?>">Completed</li>
             </ul>
@@ -74,6 +74,15 @@
                             </div>
                         <?php endif ?>
 
+                        <?php if ($contract['status'] == 'approved' && $contract['buyer']->get('ID') == get_current_user_id()) : ?>
+                            <hr />
+                            <div class="text-center">
+                                <button class="btn btn-sm btn-success text-white fw-bold" title="Make Payment" data-bs-toggle="modal" data-bs-target="#contract-payment-modal">
+                                <i class="fa fa-credit-card"></i> Make Payment
+                            </button>
+                            </div>
+                        <?php endif ?>
+
                         <?php if (($contract['status'] == 'pending' && $contract['provider_id'] == get_current_user_id()) || ($contract['status'] == 'modified' && $contract['modified_by'] == $user->get('ID'))) : ?>
                             <hr />
                             <div class="text-center">
@@ -83,7 +92,7 @@
                             </div>
                         <?php endif ?>
 
-                        <?php if ($contract['status'] == 'approved' && $contract['provider_id'] == get_current_user_id()) : ?>
+                        <?php if ($contract['status'] == 'inprogress' && $contract['provider_id'] == get_current_user_id()) : ?>
                             <hr />
                             <div class="text-center">
                                 <a class="btn btn-sm fw-bold <?= $contract['deadline'] == date('Y-m-d') ? 'bg-danger text-white glowing border-0' : 'btn-primary' ?>" title="Deliver" href="javascript:;" data-bs-toggle="modal" data-bs-target="#contract-delivery-modal"><i class="fa fa-box"></i> Deliver Now</a></li>

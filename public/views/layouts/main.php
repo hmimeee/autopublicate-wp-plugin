@@ -15,8 +15,8 @@
                             <a class="nav-link" href="<?= ap_route('user_profile', $_current_user->get('user_login')) ?>"><i class="fa fa-id-card"></i>Profile</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?= ap_route('user_profile', $_current_user->get('user_login')) ?>"><i class="fa fa-dollar-sign"></i>Wallet</a>
+                        <li class="nav-item <?= ap_is_route('wallet.index') ? 'active' : '' ?>">
+                            <a class="nav-link" href="<?= ap_route('wallet.index') ?>"><i class="fa fa-dollar-sign"></i>Wallet</a>
                         </li>
                         <li class="nav-item <?= ap_is_route('contracts.index') ? 'active' : '' ?>">
                             <a class="nav-link" href="<?= ap_route('contracts.index') ?>">

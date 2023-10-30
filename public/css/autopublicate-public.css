@@ -1563,3 +1563,59 @@ hr.dotted {
     text-align: left;
     margin-top: 2px;
 }
+
+.gateways-box {
+    position: relative;
+  }
+  .gateways-box:not(:last-child) {
+    margin-bottom: 10px;
+  }
+  
+  .gateway-input {
+    position: absolute;
+    left: -9999px;
+  }
+  
+  .gateway-label {
+    position: relative;
+    display: block;
+    line-height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    padding: 5px 20px 5px 50px;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    margin-bottom: 10px;
+  }
+  .gateway-label:hover {
+    border-color: #FF6C54;
+  }
+  .gateway-label:before, .gateway-label:after {
+    position: absolute;
+    content: "";
+  }
+  .gateway-label:before {
+    top: 8px;
+    left: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1px #ccc;
+    transition: all 0.15s ease-in-out;
+  }
+  
+  .gateway-input:checked + .gateway-label:before {
+    background-color: #FF6C54;
+    box-shadow: 0 0 0 0;
+  }
+  .gateway-input:checked + .gateway-label:after {
+    top: 18px;
+    left: 18px;
+    width: 10px;
+    height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+  }

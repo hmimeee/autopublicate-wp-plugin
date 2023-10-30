@@ -36,7 +36,7 @@
     </div>
 <?php endif ?>
 
-<?php if ($contract['status'] == 'approved' && $contract['provider_id'] == get_current_user_id()) : ?>
+<?php if ($contract['status'] == 'inprogress' && $contract['provider_id'] == get_current_user_id()) : ?>
     <div class="modal fade" id="contract-delivery-modal" tabindex="-1" aria-labelledby="contract-delivery-modal-label" aria-hidden="true">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
@@ -59,6 +59,38 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary">Confirm Delivery</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<?php endif ?>
+
+<?php if ($contract['status'] == 'approved' && $contract['buyer_id'] == get_current_user_id()) : ?>
+    <div class="modal fade" id="contract-payment-modal" tabindex="-1" aria-labelledby="contract-payment-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contract-payment-modal-label">Choose Gateway</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="<?= ap_route('contracts.payment', $contract['id']) ?>">
+                    <?php wp_nonce_field(); ?>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <div class="gateway-box">
+                                <input class="gateway-input" id="cards" type="radio" name="gateway" value="stripe">
+                                <label class="gateway-label" for="cards">Credit or Debit Cards</label>
+                            </div>
+                            <div class="gateway-box">
+                                <input class="gateway-input" id="paypal" type="radio" name="gateway" value="paypal">
+                                <label class="gateway-label" for="paypal">PayPal</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary">Pay Now</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </form>

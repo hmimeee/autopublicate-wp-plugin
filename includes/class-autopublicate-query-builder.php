@@ -56,9 +56,9 @@ class AP_DB
         return isset($this->table) ? $this->wpdb->prefix . $this->table : $this->pluralize($this->wpdb->prefix . strtolower(str_replace('_Model', '', get_class($this))));
     }
 
-    public function _query()
+    public function _query($as = null)
     {
-        return $this->db->table($this->table);
+        return $this->db->table($this->table . ($as ? " as $as" : null));
     }
 
     public function _find($value, $key = null)
