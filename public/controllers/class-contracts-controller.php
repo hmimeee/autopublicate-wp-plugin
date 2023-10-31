@@ -317,7 +317,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
     public function paypalPayment($contract)
     {
-        $paypal = new AP_PayPal_Service;
+        $paypal = new AP_PayPal_Service();
         $paypal->checkout($contract['budget'], ap_route('contracts.payment.complete', $contract['id']), ap_route('contracts.show', $contract['id']));
 
         $price = $stripe->prices->create([
