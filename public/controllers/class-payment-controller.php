@@ -39,7 +39,7 @@ class AP_Payment_Controller extends AP_Base_Controller
                 'gateway_id' => $data['id'],
                 'amount' => $contract['budget'],
                 'updated_at' => ap_date_format()
-            ])->where('contract_id', $contractId)->execute();;
+            ])->where('contract_id', $contractId)->execute();
         } else {
             AP_Transaction_Model::query()->insert([
                 'from_user_id' => $user_id,
@@ -77,7 +77,7 @@ class AP_Payment_Controller extends AP_Base_Controller
         }
 
         $contractStatuses = [
-            'paid' => 'completed',
+            'paid' => 'inprogress',
             'failed' => 'approved',
             'pending' => 'waiting'
         ];
@@ -104,7 +104,7 @@ class AP_Payment_Controller extends AP_Base_Controller
     public function contractPaymentWebhook($contractId, $gateway)
     {
         $contract = AP_Contract_Model::find($contractId);
-        if($contract['status'] == 'completed' || $contract['status'] == 'cleared') {
+        if ($contract['status'] == 'completed' || $contract['status'] == 'cleared') {
             return false;
         }
 
@@ -176,7 +176,7 @@ class AP_Payment_Controller extends AP_Base_Controller
         $paypal = new AP_PayPal_Service();
         $checkout = $paypal->checkout(number_format($contract['budget'], 2, '.', ''), ap_route('contracts.payment.complete', $contract['id']), ap_route('contracts.show', $contract['id']));
         $link = reset(array_filter($checkout['links'], function ($dt) {
-            return $dt['rel'] == 'approve';
+            return $dt['rel'] == 'payer-action';
         }));
 
         return [
@@ -198,19 +198,7 @@ class AP_Payment_Controller extends AP_Base_Controller
         $paypal = new AP_PayPal_Service();
         $order = $paypal->details($transaction['gateway_id']);
 
-        switch ($order['status']) {
-            case 'COMPLETED':
-                return 'paid';
-                break;
-
-            case 'APPROVED':
-                return 'pending';
-                break;
-
-            default:
-                return 'failed';
-                break;
-        }
+        return $order['status'] == 'APPROVED' ? 'paid' : 'failed';
     }
 
     private function contractStripeWebhook($transaction)

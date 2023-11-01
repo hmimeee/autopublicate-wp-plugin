@@ -32,7 +32,7 @@ class AP_PayPal_Service
         return $this->client->request($this->url[$this->env] . trim($uri, '/'), $args);
     }
 
-    public function checkout($amount, $success_url, $cancel_url = '/')
+    public function checkout($amount, $success_url, $cancel_url)
     {
         $request = $this->request('checkout/orders', [
             'method' => 'POST',
@@ -44,6 +44,14 @@ class AP_PayPal_Service
                         'amount' => [
                             'currency_code' => 'EUR',
                             'value' => "$amount"
+                        ]
+                    ]
+                ],
+                'payment_source' => [
+                    'paypal' => [
+                        'experience_context' => [
+                            "return_url" => $success_url,
+                            "cancel_url" => $cancel_url
                         ]
                     ]
                 ]
