@@ -44,7 +44,7 @@
                         <td><?= (new DateTime($transaction['date']))->format('Y-m-d') ?></td>
                         <td><?= $transaction['description'] ?></td>
                         <td><?= $transaction['from'] ?></td>
-                        <td>€ <?= number_format($transaction['amount'], 2) ?></td>
+                        <td class="fw-bold <?= $transaction['type'] == 'addition' ? 'text-success' : 'text-danger' ?>"><?= $transaction['type'] == 'deduction' ? '-' : '' ?>€ <?= number_format($transaction['amount'], 2) ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>

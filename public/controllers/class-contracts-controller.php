@@ -1,7 +1,5 @@
 <?php
 
-use Stripe\StripeClient;
-
 class AP_Contracts_Controller extends AP_Base_Controller
 {
     public function index()
@@ -164,6 +162,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'pending' => 'warning',
             'modified' => 'info',
             'approved' => 'primary',
+            'inprogress' => 'dark',
             'delivered' => 'info',
             'completed' => 'success',
             'cleared' => 'dark',
@@ -228,160 +227,6 @@ class AP_Contracts_Controller extends AP_Base_Controller
         ]);
 
         return $this->redirectWith(ap_route('contracts.show', $contractId), 'Contract submitted as modified, please wait till other parties to approve');
-    }
-
-    public function payment($contractId)
-    {
-        $validate = request()->validate([
-            'gateway' => 'required|in:stripe,paypal',
-        ]);
-
-        if (!$validate['status']) {
-            return $this->redirectWith(ap_route('contracts.show', $contractId), $validate['message'], 'error');
-        }
-
-        $user_id = get_current_user_id();
-        $contract = AP_Contract_Model::where('buyer_id', $user_id)->find($contractId);
-
-        if (!$contract || $contract['status'] != 'approved' || $contract['status'] == 'inprogress') {
-            return ap_abort();
-        }
-
-        switch (request('gateway')) {
-            case 'paypal':
-                $data = $this->paypalPayment($contract);
-                break;
-
-            default:
-                $data = $this->stripePayment($contract);
-                break;
-        }
-
-        $transaction = AP_Transaction_Model::where('contract_id', $contract['id'])->one();
-        if ($transaction) {
-            AP_Transaction_Model::query()->update([
-                'gateway' => request('gateway'),
-                'gateway_id' => $data['id'],
-                'amount' => $contract['budget'],
-                'updated_at' => ap_date_format()
-            ])->where('contract_id', $contractId)->execute();;
-        } else {
-            AP_Transaction_Model::query()->insert([
-                'from_user_id' => $user_id,
-                'user_id' => $contract['provider_id'],
-                'contract_id' => $contract['id'],
-                'description' => $contract['title'],
-                'amount' => $contract['budget'],
-                'gateway' => request('gateway'),
-                'gateway_id' => $data['id'],
-                'created_at' => ap_date_format()
-            ])->execute();
-        }
-
-        return $this->redirect($data['url']);
-    }
-
-    public function stripePayment($contract)
-    {
-        $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
-
-        $price = $stripe->prices->create([
-            'currency' => 'eur',
-            'unit_amount' => $contract['budget'] * 100,
-            'product_data' => [
-                'name' => 'Contract: ' . $contract['title'],
-                'metadata' => [
-                    'id' => $contract['id'],
-                    'buyer_id' => $contract['buyer_id'],
-                    'provider_id' => $contract['provider_id'],
-                    'budget' => $contract['budget'],
-                    'deadline' => $contract['deadline']
-                ]
-            ]
-        ]);
-
-        $session = $stripe->checkout->sessions->create([
-            'line_items' => [[
-                'price' => $price['id'],
-                'quantity' => 1
-            ]],
-            'success_url' => ap_route('contracts.payment.complete', $contract['id']),
-            'mode' => 'payment'
-        ]);
-
-        return [
-            'id' => $session->id,
-            'url' => $session->url
-        ];
-    }
-
-    public function paypalPayment($contract)
-    {
-        $paypal = new AP_PayPal_Service();
-        $paypal->checkout($contract['budget'], ap_route('contracts.payment.complete', $contract['id']), ap_route('contracts.show', $contract['id']));
-
-        $price = $stripe->prices->create([
-            'currency' => 'usd',
-            'unit_amount' => $contract['budget'],
-            'product_data' => [
-                'name' => 'Test'
-            ]
-        ]);
-
-        $payment = $stripe->paymentLinks->create([
-            'line_items' => [[
-                'price' => $price['id'],
-                'quantity' => 1
-            ]]
-        ]);
-
-        return $this->redirect($payment['url']);
-    }
-
-    public function paymentComplete($contractId)
-    {
-        $user_id = get_current_user_id();
-        $contract = AP_Contract_Model::where('buyer_id', $user_id)->find($contractId);
-        $transaction = AP_Transaction_Model::where('contract_id', $contractId)->one();
-
-        if (!$contract || !$transaction) {
-            return ap_abort();
-        }
-
-        switch ($transaction['gateway']) {
-            case 'paypal':
-                $paymentStatus = $this->paypalConfirm($transaction);
-                break;
-
-            default:
-                $paymentStatus = $this->stripeConfirm($transaction);
-                break;
-        }
-
-        AP_Contract_Model::query()->update([
-            'status' => $paymentStatus == 'paid' ? 'inprogress' : 'approved',
-            'updated_at' => ap_date_format()
-        ])->where('id', $contractId)->execute();
-
-        AP_Transaction_Model::query()->update([
-            'status' => $paymentStatus,
-            'updated_at' => ap_date_format()
-        ])->where('contract_id', $contractId)->execute();;
-
-        $messages = [
-            'paid' => 'Congrats, the payment was successful. Please wait till the provider deliver the work.',
-            'failed' => 'Sorry, the payment was unsuccessful. Please try again.'
-        ];
-
-        return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$paymentStatus], $paymentStatus != 'paid' ? 'error' : 'success');
-    }
-
-    public function stripeConfirm($transaction)
-    {
-        $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
-        $session = $stripe->checkout->sessions->retrieve($transaction['gateway_id']);
-
-        return $session->payment_status == 'paid' ? 'paid' : 'failed';
     }
 
     public function statusUpdate($contractId, $status)
@@ -494,29 +339,33 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
     public function deliveryAction($contractId, $status)
     {
+        if ($status == 'completed' && !request('rating')) {
+            return $this->redirectWith(ap_route('contracts.show', $contractId), 'Please select the rating first', 'error');
+        }
+
         $user_id = get_current_user_id();
         $contract = AP_Contract_Model::where('buyer_id', $user_id)->find($contractId);
-        if (!$contract || ($status == 'completed' && !isset($_POST['rating']))) {
+        if (!$contract) {
             return ap_abort();
         }
 
-        if (!in_array($status, ['approved', 'completed'])) {
+        if (!in_array($status, ['approved', 'completed']) || $contract['status'] == 'completed' || $contract['status'] == 'cleared') {
             return $this->redirectWith(ap_route('contracts.show', $contractId), 'Invalid request', 'error');
         }
 
         AP_Contract_Model::query()->update([
             'status' => $status,
-            'rating' => request('rating'),
-            'review' => request('review'),
+            'rating' => request('rating') ?: null,
+            'review' => request('review') ?: null,
             'updated_at' => now(true)->format('Y-m-d H:i:s'),
             'completed_at' => $status == 'completed' ? now(true)->format('Y-m-d H:i:s') : null
-        ])
-            ->where('id', $contract['id'])
-            ->execute();
+        ])->where('id', $contract['id'])->execute();
 
         if ($status == 'completed') {
+            $provider = AP_User_Model::find($contract['provider_id']);
+            
             AP_User_Model::query()->update([
-                'balance' => $contract['budget']
+                'balance' => $provider->get('balance') + $contract['budget']
             ])->where('ID', $contract['provider_id'])->execute();
         }
 

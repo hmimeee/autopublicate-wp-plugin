@@ -17,7 +17,7 @@ class AP_PayPal_Service
         $this->client = new WP_Http();
     }
 
-    private function request($uri, $args)
+    private function request($uri, $args = [])
     {
         $args = array_merge([
             'method' => 'GET',
@@ -36,31 +36,27 @@ class AP_PayPal_Service
     {
         $request = $this->request('checkout/orders', [
             'method' => 'POST',
-            'json' => [
+            'body' => json_encode([
                 'intent' => 'CAPTURE',
                 'purchase_units' => [
                     [
+                        'reference_id' => '123',
                         'amount' => [
                             'currency_code' => 'EUR',
                             'value' => "$amount"
                         ]
                     ]
-                ],
-                'payment_source' => [
-                    'paypal' => [
-                        'experience_context' => [
-                            'payment_method_preference' => 'IMMEDIATE_PAYMENT_REQUIRED',
-                            'brand_name' => 'Autopublícate®',
-                            'shipping_preference' => 'SET_PROVIDED_ADDRESS',
-                            'user_action' => 'PAY_NOW',
-                            'return_url' => $success_url,
-                            'cancel_url' => $cancel_url,
-                        ]
-                    ]
                 ]
-            ]
+            ])
         ]);
 
-        dd($request);
+        return json_decode($request['body'], true);
+    }
+
+    public function details($id)
+    {
+        $request = $this->request('checkout/orders/' . $id);
+
+        return json_decode($request['body'], true);
     }
 }

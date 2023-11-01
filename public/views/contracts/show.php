@@ -78,8 +78,8 @@
                             <hr />
                             <div class="text-center">
                                 <button class="btn btn-sm btn-success text-white fw-bold" title="Make Payment" data-bs-toggle="modal" data-bs-target="#contract-payment-modal">
-                                <i class="fa fa-credit-card"></i> Make Payment
-                            </button>
+                                    <i class="fa fa-credit-card"></i> Make Payment
+                                </button>
                             </div>
                         <?php endif ?>
 
@@ -238,8 +238,11 @@
                             </div>
                         </div>
                         <div class="mt-2 p-3 rounded text-break <?= get_current_user_id() == $contract['buyer_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
-                            <?= $contract['review'] ?? 'N/A' ?>
-                            <hr class="dotted mb-1" />
+                            <?php if ($contract['review']) : ?>
+                                <?= $contract['review'] ?>
+                                <hr class="dotted mb-1" />
+                            <?php endif ?>
+                            
                             <div class="pb-2 small">Rating:</div>
                             <div class="ratings">
                                 <i class="fa fa-star <?= $contract['rating'] >= 1 ? 'text-warning' : '' ?>"></i>
