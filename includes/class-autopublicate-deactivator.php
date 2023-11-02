@@ -36,15 +36,22 @@ class Autopublicate_Deactivator
 
 		$sql = $wpdb->prepare("
 			ALTER TABLE %1s
-			DROP COLUMN image,
-			DROP COLUMN country,
-			DROP COLUMN profession_title,
-			DROP COLUMN languages,
-			DROP COLUMN about,
-			DROP COLUMN professional_description,
-			DROP COLUMN attachments,
-			DROP COLUMN skills;
+			DROP image,
+			DROP country,
+			DROP profession_title,
+			DROP languages,
+			DROP about,
+			DROP professional_description,
+			DROP attachments,
+			DROP skills;
 		", $wpdb->prefix . 'users');
+
+		// run the query
+		$wpdb->query($sql);
+
+		$sql = $wpdb->prepare("
+		DROP TABLE %1s;
+		", $wpdb->prefix . 'ap_contract_comments');
 
 		// run the query
 		$wpdb->query($sql);
@@ -59,6 +66,13 @@ class Autopublicate_Deactivator
 		$sql = $wpdb->prepare("
 		DROP TABLE %1s;
 		", $wpdb->prefix . 'ap_contracts');
+
+		// run the query
+		$wpdb->query($sql);
+
+		$sql = $wpdb->prepare("
+		DROP TABLE %1s;
+		", $wpdb->prefix . 'ap_payout_requests');
 
 		// run the query
 		$wpdb->query($sql);

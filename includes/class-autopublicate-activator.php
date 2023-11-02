@@ -36,14 +36,14 @@ class Autopublicate_Activator
 
 		$sql = $wpdb->prepare("
 			ALTER TABLE %1s
-			ADD image varchar(255) NULL;
+			ADD image varchar(255) NULL,
 			ADD profession_title varchar(255) NULL,
 			ADD country varchar(255) NULL,
 			ADD languages varchar(255) NULL,
 			ADD skills varchar(255) NULL,
 			ADD professional_description longtext NULL,
-			ADD about TEXT NULL;
-			ADD balance decimal(10,4) NOT NULL DEFAULT 0,
+			ADD about TEXT NULL,
+			ADD balance decimal(10,4) NOT NULL DEFAULT 0;
 		", $wpdb->prefix . 'users');
 
 		// run the query
@@ -135,7 +135,7 @@ class Autopublicate_Activator
 
 			FOREIGN KEY (user_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE
 			)
-			", $wpdb->prefix . 'ap_withdraw_requests');
+			", $wpdb->prefix . 'ap_payout_requests');
 
 		// run the query
 		$wpdb->query($sql);
