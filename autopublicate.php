@@ -16,9 +16,11 @@
  * Plugin Name:       Autopublícate®
  * Plugin URI:        https://autopublicate.com
  * Description:       Autopublícate was created to connect writers who want to self-publish with freelancers who offer services from the publishing world.
- * Version:           1.0.1
+ * Version:           1.0
+ * Requires at least: 6.3
+ * Requires			  PHP: 7.4.20
  * Author:            Autopublícate®
- * Author URI:        https://autopublicate.com/
+ * Author URI:        https://autopublicate.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       autopublicate
@@ -35,7 +37,7 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('AUTOPUBLICATE_VERSION', '1.0.0');
+define('AUTOPUBLICATE_VERSION', '1.0');
 
 /**
  * The code that runs during plugin activation.
