@@ -12,15 +12,15 @@
                             <div class="right"></div>
                         </div>
                         <li class="nav-item <?= ap_is_route(['profile.edit', 'profile', 'profile.main', 'user_profile' => $_current_user->get('user_login')], [], true) ? 'active' : '' ?>">
-                            <a class="nav-link" href="<?= ap_route('user_profile', $_current_user->get('user_login')) ?>"><i class="fa fa-id-card"></i>Profile</a>
+                            <a class="nav-link" href="<?= ap_route('user_profile', $_current_user->get('user_login')) ?>"><i class="fa fa-id-card me-1"></i>Profile</a>
                         </li>
 
                         <li class="nav-item <?= ap_is_route('wallet.index') ? 'active' : '' ?>">
-                            <a class="nav-link" href="<?= ap_route('wallet.index') ?>"><i class="fa fa-dollar-sign"></i>Wallet</a>
+                            <a class="nav-link" href="<?= ap_route('wallet.index') ?>"><i class="fa fa-euro-sign me-1"></i>Wallet</a>
                         </li>
                         <li class="nav-item <?= ap_is_route('contracts.index') ? 'active' : '' ?>">
                             <a class="nav-link" href="<?= ap_route('contracts.index') ?>">
-                                <i class="fa fa-briefcase"></i>Contracts
+                                <i class="fa fa-briefcase me-1"></i>Contracts
                                 <sup><span class="badge bg-light text-dark rounded-circle"><?= $_contracts_need_action ?></span></sup>
                             </a>
                         </li>

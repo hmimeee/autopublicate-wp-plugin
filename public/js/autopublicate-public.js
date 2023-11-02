@@ -33,8 +33,8 @@
             var itemPosNewAnimTop = activeItemNewAnim.position();
             var itemPosNewAnimLeft = activeItemNewAnim.position();
             $(".hori-selector").css({
-               "top": itemPosNewAnimTop.top + "px",
-               "left": itemPosNewAnimLeft.left + "px",
+               "top": itemPosNewAnimTop?.top + "px",
+               "left": itemPosNewAnimLeft?.left + "px",
                "height": activeWidthNewAnimHeight + "px",
                "width": activeWidthNewAnimWidth + "px"
             });
@@ -62,6 +62,16 @@
             }
 
             reader.readAsDataURL(input.files[0]);
+         }
+      });
+
+      $('body').on('change', '.payout-method', (e) => {
+         if (e.target.value == 'bank') {
+            $('#paypal-box').addClass('d-none');
+            $('#bank-box').removeClass('d-none');
+         } else {
+            $('#bank-box').addClass('d-none');
+            $('#paypal-box').removeClass('d-none');
          }
       });
    });

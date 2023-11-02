@@ -9,8 +9,8 @@
             <ul id="progressbar">
                 <li class="col-3 <?= $progressSequences[$contract['status']] > 3 ? 'active' : 'pending' ?>"><?= $progressSequences[$contract['status']] > 2 ? ($contract['status'] == 'approved' ? 'Payment Required' : 'Paid') : 'Pending Approval' ?></li>
                 <li class="col-3 <?= $progressSequences[$contract['status']] > 4 ? 'active' : ($contract['status'] == 'inprogress' ? 'pending' : '') ?>">Working</li>
-                <li class="col-3 <?= $progressSequences[$contract['status']] > 4 ? 'active' : ($contract['status'] == 'delivered' ? 'pending' : '') ?>">Delivered</li>
-                <li class="col-3 <?= $progressSequences[$contract['status']] >= 5 ? 'active' : '' ?>">Completed</li>
+                <li class="col-3 <?= $progressSequences[$contract['status']] > 5 ? 'active' : ($contract['status'] == 'delivered' ? 'pending' : '') ?>">Delivered</li>
+                <li class="col-3 <?= $progressSequences[$contract['status']] >= 6 ? 'active' : '' ?>">Completed</li>
             </ul>
         <?php endif ?>
     </div>
@@ -174,7 +174,7 @@
             <div class="content-page p-3 d-flex flex-column" id="activity">
                 <div>
                     <div class="d-flex flex-row <?= get_current_user_id() == $contract['buyer_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                        <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('display_name') ?>">
+                        <img class="rounded-circle rounded-50 border border-secondary <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= $contract['buyer']->get('image') ?: "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('display_name') ?>">
                         <div class="d-flex flex-column justify-content-start">
                             <span class="d-block fw-bold"><?= $contract['buyer']->get('display_name') ?></span>
                             <span class="date text-black-50"><?= ap_date_format($contract['created_at'], 'd M \a\t h:i a') ?></span>
@@ -189,7 +189,7 @@
                     <hr class="dotted" />
                     <div>
                         <div class="d-flex flex-row <?= get_current_user_id() == $comment['user_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                            <img class="rounded-circle <?= get_current_user_id() == $comment['user_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $comment['user']->get('display_name') ?>" width="50" alt="<?= $comment['user']->get('display_name') ?>">
+                            <img class="rounded-circle rounded-50 border border-secondary <?= get_current_user_id() == $comment['user_id'] ? 'ms-2' : 'me-2' ?>" src="<?= $comment['user']->get('image') ?: "https://ui-avatars.com/api/?name=" . $comment['user']->get('display_name') ?>" width="50" alt="<?= $comment['user']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
                                 <span class="d-block fw-bold"><?= $comment['user']->get('display_name') ?></span>
                                 <span class="date text-black-50"><?= ap_date_format($comment['created_at'], 'd M \a\t h:i a') ?></span>
@@ -205,7 +205,7 @@
                     <hr class="dotted" />
                     <div>
                         <div class="d-flex flex-row <?= get_current_user_id() == $contract['provider_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                            <img class="rounded-circle <?= get_current_user_id() == $contract['provider_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['provider']->get('display_name') ?>" width="50" alt="<?= $contract['provider']->get('display_name') ?>">
+                            <img class="rounded-circle rounded-50 border border-secondary <?= get_current_user_id() == $contract['provider_id'] ? 'ms-2' : 'me-2' ?>" src="<?= $contract['provider']->get('image') ?: "https://ui-avatars.com/api/?name=" . $contract['provider']->get('display_name') ?>" width="50" alt="<?= $contract['provider']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
                                 <span class="d-block fw-bold"><?= $contract['provider']->get('display_name') ?></span>
                                 <span class="date text-black-50"><?= ap_date_format($contract['delivered_at'], 'd M \a\t h:i a') ?></span>
@@ -227,11 +227,11 @@
                     </div>
                 <?php endif ?>
 
-                <?php if ($contract['rating'] && $progressSequences[$contract['status']] > 4) : ?>
+                <?php if ($contract['rating'] && $progressSequences[$contract['status']] > 5) : ?>
                     <hr class="dotted" />
                     <div>
                         <div class="d-flex flex-row <?= get_current_user_id() == $contract['buyer_id'] ? 'flex-row-reverse text-end' : '' ?>">
-                            <img class="rounded-circle <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('display_name') ?>">
+                            <img class="rounded-circle rounded-50 border border-secondary <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= $contract['buyer']->get('image') ?: "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
                                 <span class="d-block fw-bold"><?= $contract['buyer']->get('display_name') ?></span>
                                 <span class="date text-black-50"><?= ap_date_format($contract['completed_at'], 'd M \a\t h:i a') ?></span>

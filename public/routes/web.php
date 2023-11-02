@@ -28,3 +28,5 @@ Route::get('payment/contracts/{contract}/webhook/{gateway}', [AP_Payment_Control
 
 //Wallet routes
 Route::get('wallet', [AP_Wallet_Controller::class, 'index'])->name('wallet.index')->auth();
+Route::get('wallet/payout', [AP_Wallet_Controller::class, 'payout'])->name('wallet.payout')->auth();
+Route::post('wallet/payout', [AP_Wallet_Controller::class, 'payoutRequest'])->name('wallet.payout-request')->auth();

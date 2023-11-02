@@ -36,7 +36,7 @@ class AP_Payment_Controller extends AP_Base_Controller
         if ($transaction) {
             AP_Transaction_Model::query()->update([
                 'gateway' => request('gateway'),
-                'gateway_id' => $data['id'],
+                'gateway_info' => $data['id'],
                 'amount' => $contract['budget'],
                 'updated_at' => ap_date_format()
             ])->where('contract_id', $contractId)->execute();
@@ -45,10 +45,10 @@ class AP_Payment_Controller extends AP_Base_Controller
                 'from_user_id' => $user_id,
                 'user_id' => $contract['provider_id'],
                 'contract_id' => $contract['id'],
-                'description' => $contract['title'],
+                'description' => 'Contract: ' . $contract['title'],
                 'amount' => $contract['budget'],
                 'gateway' => request('gateway'),
-                'gateway_id' => $data['id'],
+                'gateway_info' => $data['id'],
                 'created_at' => ap_date_format()
             ])->execute();
         }
@@ -188,7 +188,7 @@ class AP_Payment_Controller extends AP_Base_Controller
     private function contractStripeConfirm($transaction)
     {
         $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
-        $session = $stripe->checkout->sessions->retrieve($transaction['gateway_id']);
+        $session = $stripe->checkout->sessions->retrieve($transaction['gateway_info']);
 
         return $session->payment_status == 'paid' ? 'paid' : 'failed';
     }
@@ -196,7 +196,7 @@ class AP_Payment_Controller extends AP_Base_Controller
     private function contractPaypalConfirm($transaction)
     {
         $paypal = new AP_PayPal_Service();
-        $order = $paypal->details($transaction['gateway_id']);
+        $order = $paypal->details($transaction['gateway_info']);
 
         return $order['status'] == 'APPROVED' ? 'paid' : 'failed';
     }

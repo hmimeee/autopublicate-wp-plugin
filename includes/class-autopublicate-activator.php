@@ -108,7 +108,7 @@ class Autopublicate_Activator
 			type enum('addition','deduction') NOT NULL DEFAULT 'addition',
 			amount decimal(10,4) NOT NULL,
 			gateway varchar(100) NOT NULL,
-			gateway_id varchar(255) NOT NULL,
+			gateway_info text NOT NULL,
 			status enum('pending','paid','failed') NOT NULL DEFAULT 'pending',
 			created_at datetime NULL,
 			updated_at datetime NULL,
@@ -118,6 +118,24 @@ class Autopublicate_Activator
 			FOREIGN KEY (contract_id) REFERENCES {$wpdb->prefix}ap_contracts (id) ON DELETE CASCADE
 			)
 			", $wpdb->prefix . 'ap_transactions');
+
+		// run the query
+		$wpdb->query($sql);
+
+		$sql = $wpdb->prepare("
+		CREATE TABLE %1s (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			user_id BIGINT UNSIGNED NOT NULL,
+			amount decimal(10,4) NOT NULL,
+			gateway varchar(100) NOT NULL,
+			gateway_info text NOT NULL,
+			status enum('pending','processing','sent','cancelled') NOT NULL DEFAULT 'pending',
+			created_at datetime NULL,
+			updated_at datetime NULL,
+
+			FOREIGN KEY (user_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE
+			)
+			", $wpdb->prefix . 'ap_withdraw_requests');
 
 		// run the query
 		$wpdb->query($sql);

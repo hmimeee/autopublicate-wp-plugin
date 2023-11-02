@@ -12,7 +12,7 @@
                     <h2 class="d-inline"><?= number_format($_current_user->get('balance'), 2) ?></h2>
                     <small class="text-muted">Balance</small>
                     <div class="d-block mt-2">
-                        <button class="btn btn-primary btn-sm" <?= $_current_user->get('balance') < 10 ? 'disabled' : ''?>>Withdraw Balance</button>
+                        <a href="<?= $_current_user->get('balance') < 10 ? 'javascript:;' : ap_route('wallet.payout') ?>" class="btn btn-primary btn-sm" <?= $_current_user->get('balance') < 10 ? 'disabled' : '' ?>>Withdraw Balance</a>
                     </div>
                 </div>
             </div>
@@ -42,8 +42,8 @@
                 <?php foreach ($transactions as $transaction) : ?>
                     <tr>
                         <td><?= (new DateTime($transaction['date']))->format('Y-m-d') ?></td>
-                        <td><?= $transaction['description'] ?></td>
-                        <td><?= $transaction['from'] ?></td>
+                        <td><a href="<?= $transaction['contract_id'] ? ap_route('contracts.show', $transaction['contract_id']) : 'javascript:;' ?>" target="_blank"><?= $transaction['description'] ?></a></td>
+                        <td><a href="<?= ap_route('user_profile', $transaction['user_login']) ?>" target="_blank"><?= $transaction['from'] ?></a></td>
                         <td class="fw-bold <?= $transaction['type'] == 'addition' ? 'text-success' : 'text-danger' ?>"><?= $transaction['type'] == 'deduction' ? '-' : '' ?>€ <?= number_format($transaction['amount'], 2) ?></td>
                     </tr>
                 <?php endforeach ?>
