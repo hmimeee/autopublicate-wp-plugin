@@ -1059,6 +1059,17 @@ blockquote {
     }
 }
 
+.btn-danger {
+    color: #fff !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
 .btn-warning {
     color: #212529;
     background-color: #ffc107;
@@ -1076,12 +1087,17 @@ blockquote {
 .btn-secondary {
     background-color: #6c757d !important;
     color: #FFF !important;
-    border-color: white !important;
+    border-color: #6c757d !important;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
 }
 
 button.btn {
     border-radius: 5px;
-    padding: 0.35rem 0.6rem;
+    padding: 0.35rem 0.6rem !important;
 }
 
 .btn-outline-secondary {
@@ -1109,7 +1125,7 @@ button.btn {
 .btn-primary {
     background-color: #FF6C54 !important;
     color: #FFF !important;
-    border-color: white !important;
+    border-color: #FF6C54 !important;
 }
 
 .btn-primary:hover {
@@ -1566,17 +1582,18 @@ hr.dotted {
 
 .gateways-box {
     position: relative;
-  }
-  .gateways-box:not(:last-child) {
+}
+
+.gateways-box:not(:last-child) {
     margin-bottom: 10px;
-  }
-  
-  .gateway-input {
+}
+
+.gateway-input {
     position: absolute;
     left: -9999px;
-  }
-  
-  .gateway-label {
+}
+
+.gateway-label {
     position: relative;
     display: block;
     line-height: 40px;
@@ -1587,15 +1604,19 @@ hr.dotted {
     cursor: pointer;
     transition: all 0.15s ease-in-out;
     margin-bottom: 10px;
-  }
-  .gateway-label:hover {
+}
+
+.gateway-label:hover {
     border-color: #FF6C54;
-  }
-  .gateway-label:before, .gateway-label:after {
+}
+
+.gateway-label:before,
+.gateway-label:after {
     position: absolute;
     content: "";
-  }
-  .gateway-label:before {
+}
+
+.gateway-label:before {
     top: 8px;
     left: 10px;
     width: 26px;
@@ -1604,13 +1625,14 @@ hr.dotted {
     background-color: #fff;
     box-shadow: inset 0 0 0 1px #ccc;
     transition: all 0.15s ease-in-out;
-  }
-  
-  .gateway-input:checked + .gateway-label:before {
+}
+
+.gateway-input:checked+.gateway-label:before {
     background-color: #FF6C54;
     box-shadow: 0 0 0 0;
-  }
-  .gateway-input:checked + .gateway-label:after {
+}
+
+.gateway-input:checked+.gateway-label:after {
     top: 18px;
     left: 18px;
     width: 10px;
@@ -1618,9 +1640,9 @@ hr.dotted {
     border-left: 2px solid #fff;
     border-bottom: 2px solid #fff;
     transform: rotate(-45deg);
-  }
+}
 
-  .rounded-50 {
+.rounded-50 {
     width: 50px;
     height: 50px;
-  }
+}

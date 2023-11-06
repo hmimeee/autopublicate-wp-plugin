@@ -37,7 +37,7 @@ class AP_Route_Service
 
                 $route['parsed_uri'] = implode('/', $parts);
 
-                if ($route['parsed_uri'] == implode('/', $uri_parts) && $route['method'] == $_SERVER['REQUEST_METHOD']) {
+                if ($route['parsed_uri'] == implode('/', $uri_parts) && ($route['method'] == $_SERVER['REQUEST_METHOD'] || $route['method'] == 'any')) {
                     if (($route['auth'] && !get_current_user_id())) {
                         wp_redirect(wp_login_url());
                         exit;
@@ -151,48 +151,14 @@ class AP_Route_Service
         return $this;
     }
 
-    public function _put($uri, $params)
-    {
-        $class = reset($params);
-        $function = end($params);
-
-        $this->add_route($uri, $class, $function, 'PUT');
-        $this->uri = $uri;
-        $this->method = 'PUT';
-
-        return $this;
-    }
-
-    public function _delete($uri, $params)
-    {
-        $class = reset($params);
-        $function = end($params);
-
-        $this->add_route($uri, $class, $function, 'DELETE');
-        $this->uri = $uri;
-        $this->method = 'DELETE';
-
-        return $this;
-    }
-
-    public function _patch($uri, $params)
-    {
-        $class = reset($params);
-        $function = end($params);
-
-        $this->add_route($uri, $class, $function, 'PATCH');
-        $this->uri = $uri;
-        $this->method = 'GET';
-
-        return $this;
-    }
-
     public function _any($uri, $params)
     {
         $class = reset($params);
         $function = end($params);
 
-        $this->add_route($uri, $class, $function, null);
+        $this->add_route($uri, $class, $function, 'ANY');
+        $this->uri = $uri;
+        $this->method = 'ANY';
 
         return $this;
     }

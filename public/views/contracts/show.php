@@ -37,10 +37,6 @@
                         <?php endif ?>
                         <hr />
 
-                        <?php if ($contract['status'] == 'pending') : ?>
-                            <div class="pb-2"><i class="fa fa-clock"></i> Budget Type: <span class="ps-2"><?= ucfirst($contract['budget_type'] ?? 'N/A') ?></span></div>
-                        <?php endif ?>
-
                         <div class="pb-2"><i class="fa fa-euro-sign p-1"></i> Budget: <span class="ps-2">€<?= number_format($contract['budget'] ?? 0, 2) ?></span></div>
                         <div class="pb-2"><i class="fa fa-clock"></i> Deadline: <span class="ps-2"><?= $contract['deadline'] ?? $contract['expected_deadline'] ?? 'N/A' ?></span></div>
                         <div class="pb-2"><i class="fa fa-info-circle"></i> Status: <span class="badge text-white bg-<?= $statusStyles[$contract['status']] ?>"><?= ucwords($contract['status']) ?></span></div>
@@ -86,8 +82,11 @@
                         <?php if (($contract['status'] == 'pending' && $contract['provider_id'] == get_current_user_id()) || ($contract['status'] == 'modified' && $contract['modified_by'] == $user->get('ID'))) : ?>
                             <hr />
                             <div class="text-center">
-                                <a class="btn btn-sm btn-success text-white fw-bold" title="Accept" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-check"></i> Accept</a>
-                                <button class="btn btn-sm btn-primary fw-bold" title="Edit" href="javascript:;" data-bs-toggle="modal" data-bs-target="#edit-contract-modal"><i class="fa fa-pen"></i> Modify</button>
+                                <?php if ($contract['modified_by']) : ?>
+                                    <a class="btn btn-sm btn-success text-white fw-bold" title="Accept" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-check"></i> Accept</a>
+                                <?php endif ?>
+
+                                <button class="btn btn-sm btn-<?= $contract['modified_by'] ? 'primary' : 'success' ?> fw-bold" title="Edit" href="javascript:;" data-bs-toggle="modal" data-bs-target="#edit-contract-modal"><i class="fa fa-<?= $contract['modified_by'] ? 'pen' : 'check' ?>"></i> <?= $contract['modified_by'] ? 'Modify' : 'Accept' ?></button>
                                 <a class="btn btn-sm btn-danger text-white fw-bold" title="Cancel" href="<?= ap_route('contracts.status-update', ['contract' => $contract['id'], 'status' => 'cancelled']) ?>"><i class="fa fa-times"></i> Cancel</a>
                             </div>
                         <?php endif ?>
@@ -195,8 +194,12 @@
                                 <span class="date text-black-50"><?= ap_date_format($comment['created_at'], 'd M \a\t h:i a') ?></span>
                             </div>
                         </div>
-                        <div class="mt-2 p-3 rounded text-break <?= get_current_user_id() == $comment['user_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
-                            <?= html_entity_decode($comment['comment']) ?>
+                        <div class="mt-2 p-3 rounded text-break d-flex <?= get_current_user_id() == $comment['user_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
+                            <div class="col-md-11"><?= html_entity_decode($comment['comment']) ?></div>
+
+                            <?php if(get_current_user_id() == $comment['user_id']): ?>
+                                <a class="col-md-1 text-white text-end comment-delete" href="javascript:;" data-bs-toggle="modal" data-bs-target="#comment-delete-modal" data-id="<?= $comment['id'] ?>"><i class="fa fa-trash"></i></a>
+                            <?php endif ?>
                         </div>
                     </div>
                 <?php endforeach ?>
@@ -208,7 +211,12 @@
                             <img class="rounded-circle rounded-50 border border-secondary <?= get_current_user_id() == $contract['provider_id'] ? 'ms-2' : 'me-2' ?>" src="<?= $contract['provider']->get('image') ?: "https://ui-avatars.com/api/?name=" . $contract['provider']->get('display_name') ?>" width="50" alt="<?= $contract['provider']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
                                 <span class="d-block fw-bold"><?= $contract['provider']->get('display_name') ?></span>
-                                <span class="date text-black-50"><?= ap_date_format($contract['delivered_at'], 'd M \a\t h:i a') ?></span>
+                                <div class="date text-black-50 d-flex gap-1  <?= get_current_user_id() == $contract['provider_id'] ? 'flex-row-reverse text-end' : '' ?>">
+                                    <div>
+                                        <?= ap_date_format($contract['delivered_at'], 'd M \a\t h:i a') ?>
+                                    </div>
+                                    <span class="badge bg-secondary">Delivery</span>
+                                </div>
                             </div>
                         </div>
                         <div class="mt-2 p-3 rounded text-break <?= get_current_user_id() == $contract['provider_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
@@ -234,7 +242,11 @@
                             <img class="rounded-circle rounded-50 border border-secondary <?= get_current_user_id() == $contract['buyer_id'] ? 'ms-2' : 'me-2' ?>" src="<?= $contract['buyer']->get('image') ?: "https://ui-avatars.com/api/?name=" . $contract['buyer']->get('display_name') ?>" width="50" alt="<?= $contract['buyer']->get('display_name') ?>">
                             <div class="d-flex flex-column justify-content-start">
                                 <span class="d-block fw-bold"><?= $contract['buyer']->get('display_name') ?></span>
-                                <span class="date text-black-50"><?= ap_date_format($contract['completed_at'], 'd M \a\t h:i a') ?></span>
+
+                                <div class="date text-black-50 d-flex gap-1  <?= get_current_user_id() != $contract['provider_id'] ? 'flex-row-reverse text-end' : '' ?>">
+                                    <span><?= ap_date_format($contract['completed_at'], 'd M \a\t h:i a') ?></span>
+                                    <span class="badge bg-secondary">Review</span>
+                                </div>
                             </div>
                         </div>
                         <div class="mt-2 p-3 rounded text-break <?= get_current_user_id() == $contract['buyer_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
@@ -242,7 +254,7 @@
                                 <?= $contract['review'] ?>
                                 <hr class="dotted mb-1" />
                             <?php endif ?>
-                            
+
                             <div class="pb-2 small">Rating:</div>
                             <div class="ratings">
                                 <i class="fa fa-star <?= $contract['rating'] >= 1 ? 'text-warning' : '' ?>"></i>
@@ -305,5 +317,13 @@
                 $("#rating-star-" + ix).toggleClass('btn-secondary');
             }
         }));
+
+        $('.comment-delete').on('click', (e) => {
+            let commentId = $(e.target).hasClass('comment-delete') ? $(e.target).data('id') : $(e.target).parent().data('id');
+            let url = '<?= ap_route('contracts.comment.delete', ['contract' => $contract['id'], 'comment' => ':comment']) ?>';
+            url = url.replace(':comment', commentId);
+
+            $('#comment-delete-modal').find('form').attr('action', url);
+        });
     });
 </script>

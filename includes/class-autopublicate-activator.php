@@ -58,7 +58,6 @@ class Autopublicate_Activator
 			description longtext NULL,
 			expected_deadline date NULL,
 			deadline date NULL,
-			budget_type enum('estimated','fixed') NOT NULL DEFAULT 'estimated',
 			budget decimal(10,4) NULL,
 			status enum('pending', 'modified', 'approved', 'waiting', 'inprogress', 'delivered', 'completed', 'cleared','cancelled') NOT NULL DEFAULT 'pending',
 			attachments varchar(255) NULL,

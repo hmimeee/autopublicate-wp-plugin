@@ -98,6 +98,19 @@ class AP_Payment_Controller extends AP_Base_Controller
             'waiting' => 'Good news, the payment is being processed. Please wait till the payment complete.',
         ];
 
+        $provider = AP_User_Model::find($contract['provider_id']);
+
+        ap_send_mail($provider->get('email'), 'The contract got the payment', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => $provider->get('user_nicename'),
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => "Buyer make the payment for the contract. You can start working on it and finish it before the deadline.",
+                'body_second' => 'Please be noted, completing a contract within the dealine increase good impressions to the buyers.'
+            ]
+        ]);
+
         return $this->redirectWith(ap_route('contracts.show', $contractId), $messages[$paymentStatus], $paymentStatus != 'paid' ? 'error' : 'success');
     }
 

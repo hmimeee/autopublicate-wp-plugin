@@ -363,10 +363,11 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
         if ($status == 'completed') {
             $provider = AP_User_Model::find($contract['provider_id']);
-            
+            $balance = $provider->get('balance') + $contract['budget'];
+
             AP_User_Model::query()->update([
-                'balance' => $provider->get('balance') + $contract['budget']
-            ])->where('ID', $contract['provider_id'])->execute();
+                'balance' => (float) $balance
+            ])->where('ID', $provider->get('ID'))->execute();
         }
 
         $messages = [
@@ -428,5 +429,28 @@ class AP_Contracts_Controller extends AP_Base_Controller
         ]);
 
         return $this->redirectWith(ap_route('contracts.show', $contract['id']), 'Comment posted successfully');
+    }
+
+    public function commentDelete($contractId, $comment)
+    {
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where(
+            fn ($q) =>
+            $q->where('provider_id', $user_id)
+                ->orWhere('buyer_id', $user_id)
+        )->find($contractId);
+
+        if (!$contract) {
+            return ap_abort();
+        }
+
+        AP_Contract_Comment_Model::query()
+            ->delete()
+            ->where('id', $comment)
+            ->where('user_id', $user_id)
+            ->where('contract_id', $contract['id'])
+            ->execute();
+
+        return $this->redirectWith(ap_route('contracts.show', $contract['id']), 'Comment deleted successfully');
     }
 }
