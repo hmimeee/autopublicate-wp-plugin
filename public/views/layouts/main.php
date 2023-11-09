@@ -21,7 +21,9 @@
                         <li class="nav-item <?= ap_is_route('contracts.index') ? 'active' : '' ?>">
                             <a class="nav-link" href="<?= ap_route('contracts.index') ?>">
                                 <i class="fa fa-briefcase me-1"></i>Contracts
-                                <sup><span class="badge bg-light text-dark rounded-circle"><?= $_contracts_need_action ?></span></sup>
+                                <?php if ($_contracts_need_action) : ?>
+                                    <sup><span class="badge bg-light text-dark rounded-circle"><?= $_contracts_need_action ?></span></sup>
+                                <?php endif; ?>
                             </a>
                         </li>
                     </ul>

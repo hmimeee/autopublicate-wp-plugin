@@ -194,17 +194,19 @@
                                 <span class="date text-black-50"><?= ap_date_format($comment['created_at'], 'd M \a\t h:i a') ?></span>
                             </div>
                         </div>
-                        <div class="mt-2 p-3 rounded text-break d-flex <?= get_current_user_id() == $comment['user_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
-                            <div class="col-md-11"><?= html_entity_decode($comment['comment']) ?></div>
+                        <div class="mt-2 p-3 rounded text-break d-flex justify-content-between <?= get_current_user_id() == $comment['user_id'] ? 'bg-primary text-white' : 'bg-light' ?>">
+                            <div><?= html_entity_decode($comment['comment']) ?></div>
 
-                            <?php if(get_current_user_id() == $comment['user_id']): ?>
-                                <a class="col-md-1 text-white text-end comment-delete" href="javascript:;" data-bs-toggle="modal" data-bs-target="#comment-delete-modal" data-id="<?= $comment['id'] ?>"><i class="fa fa-trash"></i></a>
+                            <?php if (get_current_user_id() == $comment['user_id']) : ?>
+                                <div>
+                                    <a class="text-danger btn btn-sm btn-light comment-delete" href="javascript:;" data-bs-toggle="modal" data-bs-target="#comment-delete-modal" data-id="<?= $comment['id'] ?>"><i class="fa fa-trash"></i></a>
+                                </div>
                             <?php endif ?>
                         </div>
                     </div>
                 <?php endforeach ?>
 
-                <?php if ($progressSequences[$contract['status']] > 3) : ?>
+                <?php if ($progressSequences[$contract['status']] > 4) : ?>
                     <hr class="dotted" />
                     <div>
                         <div class="d-flex flex-row <?= get_current_user_id() == $contract['provider_id'] ? 'flex-row-reverse text-end' : '' ?>">

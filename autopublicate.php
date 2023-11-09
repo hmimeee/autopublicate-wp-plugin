@@ -16,7 +16,7 @@
  * Plugin Name:       Autopublícate®
  * Plugin URI:        https://autopublicate.com
  * Description:       Autopublícate was created to connect writers who want to self-publish with freelancers who offer services from the publishing world.
- * Version:           1.0
+ * Version:           1.1
  * Requires at least: 6.3
  * Requires			  PHP: 7.4.20
  * Author:            Autopublícate®

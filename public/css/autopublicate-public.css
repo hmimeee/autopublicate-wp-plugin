@@ -87,7 +87,7 @@ label {
     font-size: 25px;
     letter-spacing: 0.5px;
     font-weight: 600;
-
+    line-height: 0.5;
 }
 
 .sub-title .dashicons {
@@ -857,7 +857,6 @@ blockquote {
 
     .sub-title {
         border-bottom: 1px dashed #cccccc;
-        padding: 30px;
         display: inline-block;
         text-align: left;
         width: 100%;
@@ -1198,6 +1197,7 @@ button.btn {
 #progressbar {
     margin-bottom: 30px;
     overflow: hidden;
+    padding-inline-start: 0;
 }
 
 #progressbar li {

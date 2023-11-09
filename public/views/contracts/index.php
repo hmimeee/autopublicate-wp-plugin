@@ -7,11 +7,15 @@
         <div class="nav nav-tabs" role="tablist">
             <a class="nav-item nav-link <?= !in_array(request('tab'), ['delivered', 'completed']) ? 'active' : '' ?>" id="nav-ongoing-contract-tab" data-toggle="tab" href="<?= ap_route('contracts.index') ?>">
                 Ongoing
-                <span class="badge bg-primary rounded-circle"><?= $pendingCount ?></span>
+                <?php if ($pendingCount) : ?>
+                    <span class="badge bg-primary rounded-circle"><?= $pendingCount ?></span>
+                <?php endif ?>
             </a>
             <a class="nav-item nav-link <?= request('tab') == 'delivered' ? 'active' : '' ?>" id="nav-delivered-contract-tab" data-toggle="tab" href="<?= ap_route('contracts.index', ['tab' => 'delivered']) ?>">
                 Delivered
-                <span class="badge bg-primary rounded-circle"><?= $deliveredCount ?></span>
+                <?php if ($deliveredCount) : ?>
+                    <span class="badge bg-primary rounded-circle"><?= $deliveredCount ?></span>
+                <?php endif ?>
             </a>
             <a class="nav-item nav-link <?= request('tab') == 'completed' ? 'active' : '' ?>" id="nav-completed-contract-tab" data-toggle="tab" href="<?= ap_route('contracts.index', ['tab' => 'completed']) ?>">Completed</a>
         </div>
@@ -22,22 +26,22 @@
             <table class="table mt-3">
                 <thead>
                     <tr>
-                        <th scope="col" width="5%">#</th>
+                        <th class="d-none d-md-table-cell" scope="col" width="5%">#</th>
                         <th scope="col" width="35%">Title</th>
                         <th scope="col" width="15%">Budget</th>
-                        <th scope="col" width="15%">Deadline</th>
-                        <th scope="col" width="10%">Status</th>
+                        <th class="d-none d-md-table-cell" scope="col" width="15%">Deadline</th>
+                        <th class="d-none d-md-table-cell" scope="col" width="10%">Status</th>
                         <th scope="col" width="10%">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($contracts['data'] as $i => $contract) : ?>
                         <tr>
-                            <td scope="row"><?= ++$i ?></td>
+                            <td class="d-none d-md-table-cell" scope="row"><?= ++$i ?></td>
                             <td><?= strlen($contract['title']) > 50 ? substr($contract['title'], 0, 50) . '...' : $contract['title'] ?></td>
                             <td><?= $contract['budget'] ? '€' . number_format($contract['budget'], 2) : 'N/A' ?></td>
-                            <td><?= $contract['deadline'] ?? $contract['expected_deadline'] ?></td>
-                            <td><span class="<?= in_array($contract['status'], ['pending', 'delivered']) ? 'p-2 rounded text-white glowing' : '' ?>"><?= ucwords($contract['status']) ?></span></td>
+                            <td class="d-none d-md-table-cell"><?= $contract['deadline'] ?? $contract['expected_deadline'] ?></td>
+                            <td class="d-none d-md-table-cell"><span class="<?= in_array($contract['status'], ['pending', 'delivered']) ? 'p-2 rounded text-white glowing' : '' ?>"><?= ucwords($contract['status']) ?></span></td>
                             <td>
                                 <div class="btn-group">
                                     <a href="<?= ap_route('contracts.show', $contract['id']) ?>" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i></a>
