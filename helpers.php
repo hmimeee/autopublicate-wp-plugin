@@ -61,7 +61,7 @@ if (!function_exists('ap_abort')) {
 if (!function_exists('ap_route')) {
     function ap_route($name, $params = null)
     {
-        $routes = wp_cache_get('routes') ?  wp_cache_get('routes') : [];
+        $routes = wp_cache_get('ap_routes') ?  wp_cache_get('ap_routes') : [];
         $route = $routes[$name] ?? null;
         $query = null;
         $uri = '/';
@@ -110,6 +110,16 @@ if (!function_exists('ap_is_route')) {
             $routeUri = ap_route($route_name, $params);
             return site_url($current_route['parsed_uri']) == $routeUri;
         }
+    }
+}
+
+if (!function_exists('ap_admin_route')) {
+    function ap_admin_route($name, $params = [])
+    {
+        $base_url = admin_url('admin.php');
+        $query = http_build_query(array_merge(['page' => 'ap_' . $name], $params));
+
+        return $base_url . '?' . $query;
     }
 }
 
@@ -174,7 +184,7 @@ if (!function_exists('dd')) {
     }
 }
 
-if (!function_exists('alert')) {
+if (!function_exists('ap_alert')) {
 
     /**
      * This function will return if there is any kind of alert exists in the session
@@ -182,12 +192,12 @@ if (!function_exists('alert')) {
      * 
      * @param string|null $message Message to show the user
      * @param string $status Status of the action. Allowed statuses are: `success`, `warning`, `error`
-     * @return array ['status' => 'success', 'message' => 'Message of the alert']. Session array ['_bc_alert' => ['status' => 'error', 'message' => 'Message']]
+     * @return array ['status' => 'success', 'message' => 'Message of the alert']. Session array ['_ap_alert' => ['status' => 'error', 'message' => 'Message']]
      */
-    function alert(string $message = null, string $status = 'error', $data = null)
+    function ap_alert(string $message = null, string $status = 'error', $data = null)
     {
         if ($message) {
-
+            
             //Make class for the alert
             switch ($status) {
                 case 'success':
@@ -203,7 +213,7 @@ if (!function_exists('alert')) {
                     break;
             }
 
-            return session('_bc_alert', [
+            return session('_ap_alert', [
                 'message' => $message,
                 'status' => $status,
                 'class' => $class,
@@ -211,10 +221,10 @@ if (!function_exists('alert')) {
             ]);
         }
 
-        if ($alert = session('_bc_alert')) {
+        if ($alert = session('_ap_alert')) {
 
             //Unset or delete the alert message
-            unset($_SESSION['_bc_alert']);
+            unset($_SESSION['_ap_alert']);
 
             return $alert;
         }

@@ -2,10 +2,9 @@
 
 class AP_Route_Service
 {
-    public function __construct()
-    {
-        //
-    }
+    use AP_Static_Handler;
+
+    private $routes;
 
     /**
      * Get method server request handler
@@ -15,12 +14,20 @@ class AP_Route_Service
      * @param string $method Controller method in which function will handle the request
      * @return mixed
      */
-    public static function get(string $path, $params)
+    public function _get(string $path, $params)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') return;
+
         $controller = reset($params);
         $method = end($params);
 
-        if (request('page') == $path && empty($_POST)) {
+        $this->routes[] = [
+            'path' => $path,
+            'controller' => $controller,
+            'method' => $method
+        ];
+
+        if (request('page') ==  'ap_' . $path) {
             $class = new $controller;
             return $class->$method();
         }
@@ -34,12 +41,14 @@ class AP_Route_Service
      * @param string $method Controller method in which function will handle the request
      * @return mixed
      */
-    public static function post(string $path, $params)
+    public function _post(string $path, $params)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') return;
+
         $controller = reset($params);
         $method = end($params);
-        
-        if (request('page') == $path && !empty($_POST)) {
+
+        if (request('page') == 'ap_' . $path) {
             $class = new $controller;
             return $class->$method();
         }
@@ -53,11 +62,11 @@ class AP_Route_Service
      * @param string $method Controller static method in which function will handle the request
      * @return mixed
      */
-    public static function api(string $path, string $controller, string $method, $public = false)
+    public function _api(string $path, string $controller, string $method, $public = false)
     {
         add_action('wp_ajax_' . $path, [$controller, $method]);
 
-        if($public)
-        add_action('wp_ajax_nopriv_' . $path, [ $controller, $method]);
+        if ($public)
+            add_action('wp_ajax_nopriv_' . $path, [$controller, $method]);
     }
 }

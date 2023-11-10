@@ -2,6 +2,8 @@
 
 class AP_Route_Service
 {
+    use AP_Static_Handler;
+    
     protected $instance;
 
     protected $routes;
@@ -14,7 +16,7 @@ class AP_Route_Service
     {
         //Route preparing
         if (isset(parse_url($_SERVER['REQUEST_URI'])['path']) && parse_url($_SERVER['REQUEST_URI'])['path'] != '/') {
-            $routes = wp_cache_get('routes');
+            $routes = wp_cache_get('ap_routes');
             $parsed_uri = parse_url($_SERVER['REQUEST_URI'])['path'];
             $uri_parts = explode('/', trim($parsed_uri, '/'));
 
@@ -67,7 +69,7 @@ class AP_Route_Service
         $parsed_uri = str_replace(reset($matches), '', $uri);
         $params = str_replace(['{', '}'], '', reset($matches));
 
-        $routes = wp_cache_get('routes') ?  wp_cache_get('routes') : [];
+        $routes = wp_cache_get('ap_routes') ?  wp_cache_get('ap_routes') : [];
         $routes[] = [
             'uri' => $uri,
             'parsed_uri' => $parsed_uri,
@@ -78,12 +80,12 @@ class AP_Route_Service
             'method' => $method,
             'auth' => false
         ];
-        wp_cache_set('routes', $routes);
+        wp_cache_set('ap_routes', $routes);
     }
 
     public function name($name)
     {
-        $routes = wp_cache_get('routes');
+        $routes = wp_cache_get('ap_routes');
         $filter = $this->route(true);
         $route = reset($filter);
         $keys = array_keys($filter);
@@ -92,14 +94,14 @@ class AP_Route_Service
         unset($routes[$index]);
         $routes[$name] = $route;
 
-        wp_cache_set('routes', $routes);
+        wp_cache_set('ap_routes', $routes);
 
         return $this;
     }
 
     public function auth()
     {
-        $routes = wp_cache_get('routes');
+        $routes = wp_cache_get('ap_routes');
         $filter = $this->route(true);
         $route = reset($filter);
         $keys = array_keys($filter);
@@ -108,14 +110,14 @@ class AP_Route_Service
         $route['auth'] = true;
         $routes[$key] = $route;
 
-        wp_cache_set('routes', $routes);
+        wp_cache_set('ap_routes', $routes);
 
         return $this;
     }
 
     private function route($withKey = false)
     {
-        $routes = wp_cache_get('routes') ?  wp_cache_get('routes') : [];
+        $routes = wp_cache_get('ap_routes') ?  wp_cache_get('ap_routes') : [];
         $filter = array_filter($routes, fn ($dt) => $dt['uri'] == $this->uri && $dt['method'] == $this->method);
         $route = reset($filter);
 
@@ -161,24 +163,5 @@ class AP_Route_Service
         $this->method = 'ANY';
 
         return $this;
-    }
-
-    public function __call($method, $args)
-    {
-        return $this->call($method, $args);
-    }
-
-    public static function __callStatic($method, $args)
-    {
-        return (new static())->call($method, $args);
-    }
-
-    private function call($method, $args)
-    {
-        if (!method_exists($this, '_' . $method)) {
-            throw new Exception('Call undefined method ' . $method);
-        }
-
-        return $this->{'_' . $method}(...$args);
     }
 }

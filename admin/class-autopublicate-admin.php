@@ -75,7 +75,7 @@ class Autopublicate_Admin
 		 * class.
 		 */
 
-		// wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/autopublicate-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/autopublicate-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -111,6 +111,7 @@ class Autopublicate_Admin
 	 */
 	public function enqueue_files()
 	{
+		session_start();
 		/**
 		 * These classes are responsible for admin panel controlling
 		 * core plugin.
@@ -129,7 +130,7 @@ class Autopublicate_Admin
 	public function admin_menu()
 	{
 		add_menu_page(
-			'Autopublícate® - Dashboard',
+			'Autopublícate® Dashboard',
 			'Autopublícate®',
 			'read',
 			'autopublicate',
@@ -140,10 +141,10 @@ class Autopublicate_Admin
 
 		add_submenu_page(
 			'autopublicate',
-			'Autopublícate® - Settings',
+			'Autopublícate® Settings',
 			'Settings',
 			'read',
-			'settings',
+			'ap_settings',
 			array('Autopublicate_Admin', 'route'),
 			1
 		);

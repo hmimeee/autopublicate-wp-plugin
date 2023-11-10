@@ -2,6 +2,8 @@
 
 trait AP_Static_Handler
 {
+    public $prefix = '_';
+
     public function __call($method, $args)
     {
         return $this->call($method, $args);
@@ -14,7 +16,7 @@ trait AP_Static_Handler
 
     private function call($method, $args)
     {
-        if (! method_exists($this , '_' . $method)) {
+        if (! method_exists($this , $this->prefix . $method)) {
             throw new Exception('Call undefined method ' . $method);
         }
 

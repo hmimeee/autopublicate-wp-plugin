@@ -3,7 +3,7 @@
 
     <div class="alert-box-property"></div>
 
-    <?php if ($alert = alert()) : ?>
+    <?php if ($alert = ap_alert()) : ?>
         <div class="<?= $alert['class'] ?> notice">
             <p><?= $alert['message'] ?></p>
         </div>

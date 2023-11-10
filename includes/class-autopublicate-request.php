@@ -15,7 +15,7 @@ class Autopublicate_Request
         $file = $_FILES;
         $session = $_SESSION['_request'] ?? [];
 
-        $this->data = array_merge($get, $post, $file, $session);
+        $this->data = array_merge($session, $get, $post, $file);
 
         foreach ($this->data as $key => $value) {
             $this->$key = $value;
@@ -145,8 +145,14 @@ class Autopublicate_Request
         ];
     }
 
-    public function only(...$params)
+    public function only($param, ...$params)
     {
+        if(is_string($param)) {
+            $params[] = $param;
+        } else {
+            $params = array_merge($param);
+        }
+
         return array_intersect_key($this->data, array_flip($params));
     }
 
