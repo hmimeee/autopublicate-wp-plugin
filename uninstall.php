@@ -29,3 +29,55 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+global $wpdb; // the wordpress database object
+
+$sql = $wpdb->prepare("
+ALTER TABLE %1s
+DROP image,
+DROP country,
+DROP profession_title,
+DROP languages,
+DROP about,
+DROP professional_description,
+DROP attachments,
+DROP skills;
+", $wpdb->prefix . 'users');
+
+// run the query
+$wpdb->query($sql);
+
+$sql = $wpdb->prepare("
+DROP TABLE %1s;
+", $wpdb->prefix . 'ap_contract_comments');
+
+// run the query
+$wpdb->query($sql);
+
+$sql = $wpdb->prepare("
+DROP TABLE %1s;
+", $wpdb->prefix . 'ap_transactions');
+
+// run the query
+$wpdb->query($sql);
+
+$sql = $wpdb->prepare("
+DROP TABLE %1s;
+", $wpdb->prefix . 'ap_contracts');
+
+// run the query
+$wpdb->query($sql);
+
+$sql = $wpdb->prepare("
+DROP TABLE %1s;
+", $wpdb->prefix . 'ap_payout_requests');
+
+// run the query
+$wpdb->query($sql);
+
+$sql = $wpdb->prepare("
+DROP TABLE %1s;
+", $wpdb->prefix . 'ap_contract_resolution_requests');
+
+// run the query
+$wpdb->query($sql);

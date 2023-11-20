@@ -132,7 +132,7 @@ class Autopublicate_Admin
 		add_menu_page(
 			'Autopublícate® Dashboard',
 			'Autopublícate®',
-			'read',
+			'ap_access_none',
 			'autopublicate',
 			array('Autopublicate_Admin', 'route'),
 			plugin_dir_url(__FILE__) . 'img/icon.png',
@@ -141,12 +141,53 @@ class Autopublicate_Admin
 
 		add_submenu_page(
 			'autopublicate',
-			'Autopublícate® Settings',
+			'Autopublícate® - Dashboard',
+			'Dashboard',
+			'read',
+			'ap_dashboard',
+			array('Autopublicate_Admin', 'route'),
+			1
+		);
+
+		add_submenu_page(
+			'autopublicate',
+			'Autopublícate® - Contracts',
+			'Contracts',
+			'read',
+			'ap_contracts',
+			array('Autopublicate_Admin', 'route'),
+			2
+		);
+
+		add_submenu_page(
+			'autopublicate',
+			'Autopublícate® - Settings',
 			'Settings',
 			'read',
 			'ap_settings',
 			array('Autopublicate_Admin', 'route'),
-			1
+			3
+		);
+
+
+		add_submenu_page(
+			'contracts',
+			'Autopublícate® - Contract View',
+			null,
+			'read',
+			'ap_contract_view',
+			array('Autopublicate_Admin', 'route'),
+			2
+		);
+
+		add_submenu_page(
+			'contracts',
+			'Autopublícate® - Contract Resolution',
+			null,
+			'read',
+			'ap_contract_resolution',
+			array('Autopublicate_Admin', 'route'),
+			2
 		);
 	}
 

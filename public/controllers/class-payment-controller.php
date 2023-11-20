@@ -4,7 +4,7 @@ use Stripe\Event;
 use Stripe\StripeClient;
 
 class AP_Payment_Controller extends AP_Base_Controller
-{
+{    
     public function contractPayment($contractId)
     {
         $validate = request()->validate([
@@ -21,6 +21,8 @@ class AP_Payment_Controller extends AP_Base_Controller
         if (!$contract || $contract['status'] != 'approved' || $contract['status'] == 'inprogress') {
             return ap_abort();
         }
+
+        $contract['budget'] = prepare_buyer_amount($contract['budget']);
 
         switch (request('gateway')) {
             case 'paypal':
@@ -152,7 +154,8 @@ class AP_Payment_Controller extends AP_Base_Controller
 
     private function contractStripePayment($contract)
     {
-        $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
+        $setting = maybe_unserialize(get_option('ap_payment_settings'));
+        $stripe = new StripeClient($setting['stripe_client_secret'] ?? '');
 
         $price = $stripe->prices->create([
             'currency' => 'eur',
@@ -200,7 +203,8 @@ class AP_Payment_Controller extends AP_Base_Controller
 
     private function contractStripeConfirm($transaction)
     {
-        $stripe = new StripeClient('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
+        $setting = maybe_unserialize(get_option('ap_payment_settings'));
+        $stripe = new StripeClient($setting['stripe_client_secret'] ?? '');
         $session = $stripe->checkout->sessions->retrieve($transaction['gateway_info']);
 
         return $session->payment_status == 'paid' ? 'paid' : 'failed';

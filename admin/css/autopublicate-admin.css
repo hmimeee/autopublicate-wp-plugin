@@ -3,22 +3,203 @@
  * included in this file.
  */
 
- .caution {
-    display: inline-block;
-    vertical-align: top;
-    box-sizing: border-box;
-    margin: 1px 0 -1px 2px;
-    padding: 0 5px;
-    min-width: 18px;
-    height: 18px;
-    border-radius: 9px;
-    background-color: #d63638;
-    color: #fff;
-    font-size: 11px;
-    line-height: 1.6;
-    text-align: center;
- }
+.ap-caution {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  margin: 1px 0 -1px 2px;
+  padding: 0 5px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: #d63638;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
 
- .notice, div.error, div.updated {
-   margin: 5px 20px 5px 2px;
- }
+.ap-badge {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  margin: 1px 0 -1px 2px;
+  padding: 0 10px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: #0073aa;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.ap-badge-dark {
+  background-color: #000;
+}
+
+.ap-label {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  margin: 1px 0 -1px 2px;
+  padding: 0 10px;
+  min-width: 18px;
+  height: 18px;
+  background-color: #0073aa;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.ap-comment-seperator {
+  border-block-start: 1px solid #eee;
+}
+
+.notice,
+div.error,
+div.updated {
+  margin: 5px 20px 5px 2px;
+}
+
+input,
+textarea,
+select {
+  min-width: 50%;
+}
+
+select.small {
+  min-width: 10% !important;
+}
+
+.text-danger {
+  color: #b32d2e !important;
+}
+
+.ap-button {
+  color: #2271b1;
+  border-color: #2271b1;
+  background: #f6f7f7;
+  vertical-align: top;
+  margin: 0 8px 0 0;
+  display: inline-block;
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 2.15384615;
+  min-height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  -webkit-appearance: none;
+  border-radius: 3px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  min-width: auto;
+  text-align: center;
+}
+
+.ap-button-primary {
+  background: #2271b1;
+  color: #fff;
+}
+
+.ap-button-primary:hover {
+  border-color: #1b5a8f;
+  background: #1b5a8f;
+}
+
+.ap-button-danger {
+  border-color: #b32d2e;
+  background: #b32d2e;
+  color: #fff;
+}
+
+.ap-button-danger:hover {
+  border-color: #922424;
+  background: #922424;
+}
+
+.button.cancel .dashicons {
+  line-height: 1.4;
+}
+
+.dashicons-star-filled.active {
+  color: #ffc107 !important;
+}
+
+.w-50 {
+  width: 50% !important;
+}
+
+h2.hndle {
+  cursor: auto !important;
+}
+
+.ap-user-info-box {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  vertical-align: middle;
+  gap: 10px;
+}
+
+.ap-focused-text {
+  color: #0073aa;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ap-attachment {
+  display: block;
+  margin-top: 3px;
+}
+
+.ap-attachment .dashicons {
+  font-size: 14px;
+}
+
+.ap-rounded {
+  border-radius: 50%;
+}
+
+.d-block {
+  display: block;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.ap-comment-box {
+  padding: 10px;
+  box-shadow: 0 2px 3px rgba(0,0,0,.05);
+  margin-bottom: 5px;
+}
+
+.ap-comment-header {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 5px;
+  padding: 10px 0;
+  border-block-end: 1px solid #eee;
+}
+
+.align-right {
+  margin-left: auto;
+  align-items: top;
+}
+
+.ap-padding-box {
+  padding: 5px 0;
+}
+
+.ap-resolution-icon {
+  font-size: 50px;
+  margin-bottom: 30px;
+  width: 100px;
+}

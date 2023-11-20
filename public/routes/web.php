@@ -21,6 +21,7 @@ Route::get('contracts/{contract}/delivery-action/{status}', [AP_Contracts_Contro
 Route::post('contracts/{contract}/delivery-action/{status}', [AP_Contracts_Controller::class, 'deliveryAction'])->name('contracts.delivery-accept')->auth();
 Route::post('contracts/{contract}/comment', [AP_Contracts_Controller::class, 'comment'])->name('contracts.comment')->auth();
 Route::post('contracts/{contract}/comment/{comment}', [AP_Contracts_Controller::class, 'commentDelete'])->name('contracts.comment.delete')->auth();
+Route::post('contracts/{contract}/resolution', [AP_Contracts_Controller::class, 'resolution'])->name('contracts.resolution')->auth();
 
 //Payment routes
 Route::post('payment/contracts/{contract}', [AP_Payment_Controller::class, 'contractPayment'])->name('contracts.payment')->auth();

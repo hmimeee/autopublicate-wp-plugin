@@ -41,7 +41,6 @@ class AP_Base_Controller
                         ->orWhere('buyer_id', get_current_user_id())
                 )->whereIn('status', ['delivered', 'pending'])
                     ->count();
-                session_start();
 
                 ap_file_loader('public/views/layouts/main.php', $params);
             } catch (Throwable $th) {

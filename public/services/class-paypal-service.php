@@ -9,27 +9,29 @@ class AP_PayPal_Service
 
     public $client;
 
-    public $env;
+    private $setting;
 
-    public function __construct($env = 'test')
+    public function __construct()
     {
-        $this->env = $env;
         $this->client = new WP_Http();
+        $this->setting = maybe_unserialize(get_option('ap_payment_settings'));
     }
 
     private function request($uri, $args = [])
     {
+        $clientId = $this->setting['paypal_client_id'] ?? '';
+        $clientSecret = $this->setting['paypal_client_secret'] ?? '';
         $args = array_merge([
             'method' => 'GET',
             'headers' => [
                 'Accept' => 'application/json',
                 'Accept-Language' => 'en_US',
-                'Authorization' => 'Basic ' . base64_encode("AbA9FGYwbmT-47aizogTkjqmU9fNazXJFel6xIKHPw4tnlchWaL2Qitro7meBSfePEnh8VwfY26_1RQO:EIeVB-gKDG8lYbOBVPwAsxahfZyNgVkch-h3xcm1Dv4U6D_06bW3XpuMhX2XoWoJgWRMqRQFn-4n-t-B"),
+                'Authorization' => 'Basic ' . base64_encode("$clientId:$clientSecret"),
                 'Content-Type' => 'application/json'
             ]
         ], $args);
 
-        return $this->client->request($this->url[$this->env] . trim($uri, '/'), $args);
+        return $this->client->request($this->url[$this->setting['paypal_environment']] . trim($uri, '/'), $args);
     }
 
     public function checkout($amount, $success_url, $cancel_url)

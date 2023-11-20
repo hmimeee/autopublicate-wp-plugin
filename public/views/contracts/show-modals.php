@@ -116,3 +116,37 @@
         </div>
     </div>
 </div>
+
+<?php if ($progressSequences[$contract['status']] > 2) : ?>
+    <div class="modal fade" id="contract-resolution-modal" tabindex="-1" aria-labelledby="contract-resolution-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contract-resolution-modal-label">Contract Resolution</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="<?= ap_route('contracts.resolution', $contract['id']) ?>">
+                    <?php wp_nonce_field(); ?>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Resolution Type</label>
+                            <select name="type" class="form-control">
+                                <option value="">Select Type</option>
+                                <option value="cancel">Refund</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name-field">Notes</label>
+                            <textarea name="notes"><?= request('notes') ?></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <button class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<?php endif ?>

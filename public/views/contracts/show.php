@@ -3,7 +3,12 @@
         <?php if ($progressSequences[$contract['status']] == 0) : ?>
             <ul id="progressbar">
                 <li class="col-6 active">Created</li>
-                <li class="col-6 cancelled">Cancelled</li>
+                <li class="col-6 cancelled"><?=ucfirst($contract['status']) ?></li>
+            </ul>
+        <?php elseif ($resolution) : ?>
+            <ul id="progressbar">
+                <li class="col-6 active">Resolution Submitted</li>
+                <li class="col-6 pending">Pending Under Support</li>
             </ul>
         <?php else : ?>
             <ul id="progressbar">
@@ -39,7 +44,16 @@
 
                         <div class="pb-2"><i class="fa fa-euro-sign p-1"></i> Budget: <span class="ps-2">€<?= number_format($contract['budget'] ?? 0, 2) ?></span></div>
                         <div class="pb-2"><i class="fa fa-clock"></i> Deadline: <span class="ps-2"><?= $contract['deadline'] ?? $contract['expected_deadline'] ?? 'N/A' ?></span></div>
-                        <div class="pb-2"><i class="fa fa-info-circle"></i> Status: <span class="badge text-white bg-<?= $statusStyles[$contract['status']] ?>"><?= ucwords($contract['status']) ?></span></div>
+                        <div class="pb-2">
+                            <i class="fa fa-info-circle"></i>
+                            Status:
+
+                            <?php if ($resolution) : ?>
+                                <span class="badge text-white bg-warning">Under Resolution</span>
+                            <?php else : ?>
+                                <span class="badge text-white bg-<?= $statusStyles[$contract['status']] ?>"><?= ucwords($contract['status']) ?></span>
+                            <?php endif ?>
+                        </div>
                         <?php if ($contract['rating']) : ?>
                             <div class="pb-2">
                                 <i class="fa fa-star"></i> Rating:
@@ -137,6 +151,13 @@
                                     <li><a class="bg-warning" title="Return" href="<?= ap_route('contracts.delivery-return', ['contract' => $contract['id'], 'status' => 'approved']) ?>"><i class="fa fa-undo"></i></a></li>
                                 </ul>
                             </form>
+                        <?php endif ?>
+
+                        <?php if ($progressSequences[$contract['status']] > 2 && !$resolution) : ?>
+                            <hr />
+                            <div class="text-center">
+                                <a class="btn btn-sm fw-bold btn-primary" title="Resolution" href="javascript:;" data-bs-toggle="modal" data-bs-target="#contract-resolution-modal"><i class="fa fa-exclamation-circle"></i> Resolution</a></li>
+                            </div>
                         <?php endif ?>
                     </div>
                 </div>

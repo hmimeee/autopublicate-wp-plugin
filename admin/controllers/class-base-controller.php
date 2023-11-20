@@ -4,6 +4,14 @@ class AP_Base_Controller
 {
     public $layout = 'main';
 
+    public $wpdb;
+
+    public function __construct()
+    {
+        global $wpdb;
+        $this->wpdb = $wpdb;
+    }
+
     public function view($page, $params = [])
     {
         $params['_page'] = trim($page, '/') . '.php';

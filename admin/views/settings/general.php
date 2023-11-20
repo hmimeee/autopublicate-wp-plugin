@@ -20,7 +20,7 @@
     </table>
 
     <h2 class="title">Advance Feature</h2>
-    <p><span class="caution">!</span> Please don't change anything if you're not a developer, changes of this section can break the plugin/site functionalities.</p>
+    <p><span class="ap-caution">!</span> Please don't change anything if you're not a developer, changes of this section can break the plugin/site functionalities.</p>
     <table class="form-table" role="presentation">
         <tbody>
             <tr>
@@ -44,5 +44,5 @@
         </tbody>
     </table>
 
-    <p class="submit"><input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes"></p>
+    <p class="submit"><button class="button button-primary">Save Changes</button></p>
 </form>

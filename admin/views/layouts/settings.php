@@ -3,7 +3,7 @@
         <h1><?= $pageTitle ?? esc_html(get_admin_page_title()); ?></h1>
     </div>
 
-    <nav class="privacy-settings-tabs-wrapper hide-if-no-js">
+    <nav class="privacy-settings-tabs-wrapper">
         <a href="<?= ap_admin_route('settings') ?>" class="privacy-settings-tab <?= request('tab', 'general') == 'general' ? 'active' : '' ?>">General </a>
         <a href="<?= ap_admin_route('settings', ['tab' => 'payment']) ?>" class="privacy-settings-tab <?= request('tab') == 'payment' ? 'active' : '' ?>">Payment</a>
     </nav>

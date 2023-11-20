@@ -197,7 +197,7 @@ if (!function_exists('ap_alert')) {
     function ap_alert(string $message = null, string $status = 'error', $data = null)
     {
         if ($message) {
-            
+
             //Make class for the alert
             switch ($status) {
                 case 'success':
@@ -289,16 +289,23 @@ if (!function_exists('paginate')) {
         return [
             'per_page' => $per_page,
             'page' => $page,
-            'total_pages' => ceil((clone $query)->count() / $per_page),
+            'total_pages' => ceil((clone $query)->count() / $per_page) ?: 1,
             'data' => $query->page($page - 1, $per_page)->get(),
         ];
     }
 }
 
-if (!function_exists('paginate_view')) {
-    function paginate_view($pagination)
+if (!function_exists('ap_paginate_view')) {
+    function ap_paginate_view($pagination)
     {
         ap_file_loader('public/views/layouts/sections/pagination.php', ['pagination' => $pagination]);
+    }
+}
+
+if (!function_exists('ap_admin_paginate_view')) {
+    function ap_admin_paginate_view($pagination)
+    {
+        ap_file_loader('admin/views/layouts/sections/pagination.php', ['pagination' => $pagination]);
     }
 }
 
@@ -331,5 +338,45 @@ if (!function_exists('ap_date_format')) {
     function ap_date_format(string $date = null, string $format = 'Y-m-d H:i:s')
     {
         return (new \DateTime($date ?? ''))->setTimezone(wp_timezone())->format($format);
+    }
+}
+
+if (!function_exists('prepare_provider_amount')) {
+
+    function prepare_provider_amount(float $amount)
+    {
+        $setting = maybe_unserialize(get_option('ap_payment_settings'));
+
+        if (!isset($setting['provider_charge'])) {
+            return $amount;
+        }
+
+        if ($setting['provider_charge_type'] == '%') {
+            $charge = $amount * floatval($setting['provider_charge']) / 100;
+        } else {
+            $charge = $amount - floatval($setting['provider_charge']);
+        }
+
+        return $amount - $charge;
+    }
+}
+
+if (!function_exists('prepare_buyer_amount')) {
+
+    function prepare_buyer_amount(float $amount)
+    {
+        $setting = maybe_unserialize(get_option('ap_payment_settings'));
+
+        if (!isset($setting['buyer_charge'])) {
+            return $amount;
+        }
+
+        if ($setting['buyer_charge_type'] == '%') {
+            $charge = $amount * floatval($setting['buyer_charge']) / 100;
+        } else {
+            $charge = $amount - floatval($setting['buyer_charge']);
+        }
+
+        return $amount - $charge;
     }
 }

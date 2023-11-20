@@ -155,7 +155,8 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'inprogress' => 4,
             'delivered' => 5,
             'completed' => 6,
-            'cleared' => 7
+            'cleared' => 7,
+            'refunded' => 0
         ];
 
         $statusStyles = [
@@ -166,7 +167,8 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'delivered' => 'info',
             'completed' => 'success',
             'cleared' => 'dark',
-            'cancelled' => 'danger'
+            'cancelled' => 'danger',
+            'refunded' => 'danger'
         ];
 
         $pendingUnder = null;
@@ -179,7 +181,13 @@ class AP_Contracts_Controller extends AP_Base_Controller
             );
         }
 
-        return $this->view('contracts/show', compact('contract', 'title', 'progressSequences', 'pendingUnder', 'statusStyles'));
+        $resolution = AP_Contract_Resolution_Request_Model::query()
+        ->select()
+        ->where('contract_id', $contract['id'])
+        ->where('status', 'pending')
+        ->one();
+
+        return $this->view('contracts/show', compact('contract', 'title', 'progressSequences', 'pendingUnder', 'statusStyles', 'resolution'));
     }
 
     public function modify($contractId)
@@ -363,7 +371,7 @@ class AP_Contracts_Controller extends AP_Base_Controller
 
         if ($status == 'completed') {
             $provider = AP_User_Model::find($contract['provider_id']);
-            $balance = $provider->get('balance') + $contract['budget'];
+            $balance = $provider->get('balance') + prepare_provider_amount($contract['budget']);
 
             AP_User_Model::query()->update([
                 'balance' => (float) $balance
@@ -452,5 +460,53 @@ class AP_Contracts_Controller extends AP_Base_Controller
             ->execute();
 
         return $this->redirectWith(ap_route('contracts.show', $contract['id']), 'Comment deleted successfully');
+    }
+
+    public function resolution($contractId)
+    {
+        $validate = request()->validate([
+            'type' => 'required|in:cancel',
+            'notes' => 'required|string|max:255'
+        ]);
+
+        if (!$validate['status']) {
+            return $this->redirectWith(ap_route('contracts.show', $contractId), $validate['message'], 'error');
+        }
+
+        $user_id = get_current_user_id();
+        $contract = AP_Contract_Model::where(
+            fn ($q) =>
+            $q->where('provider_id', $user_id)
+                ->orWhere('buyer_id', $user_id)
+        )->find($contractId);
+
+        if (!$contract) {
+            return ap_abort();
+        }
+
+        AP_Contract_Resolution_Request_Model::query()
+        ->insert([
+            'contract_id' => $contract['id'],
+            'user_id' => $user_id,
+            'notes' => htmlentities(stripslashes(request('notes'))),
+            'updated_at' => now(true)->format('Y-m-d H:i:s'),
+            'created_at' => now(true)->format('Y-m-d H:i:s')
+        ])
+        ->execute();
+
+        $adminEmail = get_option('admin_email');
+        $user = AP_User_Model::find($user_id);
+        ap_send_mail($adminEmail, $user->get('user_nicename') . ' has submitted a resolution request', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => 'Admin',
+                'action' => 'See Details',
+                'action_url' => ap_route('contracts.show', $contractId),
+                'body_first' => 'A request to resolution the contract has been submitted by ' . $user->get('user_nicename') . '. Please have look on the detail page and make an action regarding this.',
+                'body_second' => 'Please take a loon the activities part before making a decision.'
+            ]
+        ]);
+        
+        return $this->redirectWith(ap_route('contracts.show', $contract['id']), 'Resolution request created successfully');
     }
 }

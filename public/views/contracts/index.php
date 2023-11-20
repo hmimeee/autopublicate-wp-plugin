@@ -52,7 +52,7 @@
                 </tbody>
             </table>
 
-            <?php paginate_view($contracts) ?>
+            <?php ap_paginate_view($contracts) ?>
         </div>
         <div class="tab-pane fade" id="nav-delivered-contract" role="tabpanel" aria-labelledby="nav-delivered-contract-tab">...</div>
         <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-completed-contract-tab">...</div>

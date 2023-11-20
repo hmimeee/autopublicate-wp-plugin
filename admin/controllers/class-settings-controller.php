@@ -10,7 +10,8 @@ class AP_Settings_Controller extends AP_Base_Controller
     public function index()
     {
         if (request('tab') == 'payment') {
-            return $this->view('settings/payment');
+            $settings = ['ap_payment_settings' => maybe_unserialize(get_option('ap_payment_settings'))];
+            return $this->view('settings/payment', compact('settings'));
         } else {
             $settings = ['ap_settings' => maybe_unserialize(get_option('ap_settings'))];
 
@@ -21,7 +22,8 @@ class AP_Settings_Controller extends AP_Base_Controller
     public function update()
     {
         $data = request()->only([
-            'ap_settings'
+            'ap_settings',
+            'ap_payment_settings'
         ]);
 
         foreach ($data as $key => $value)

@@ -59,7 +59,7 @@ class Autopublicate_Activator
 			expected_deadline date NULL,
 			deadline date NULL,
 			budget decimal(10,4) NULL,
-			status enum('pending', 'modified', 'approved', 'waiting', 'inprogress', 'delivered', 'completed', 'cleared','cancelled') NOT NULL DEFAULT 'pending',
+			status enum('pending', 'modified', 'approved', 'waiting', 'inprogress', 'delivered', 'completed', 'cleared','cancelled', 'refunded') NOT NULL DEFAULT 'pending',
 			attachments varchar(255) NULL,
 			modified_by BIGINT UNSIGNED NULL,
 			delivery_notes longtext NULL,
@@ -135,6 +135,26 @@ class Autopublicate_Activator
 			FOREIGN KEY (user_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE
 			)
 			", $wpdb->prefix . 'ap_payout_requests');
+
+		// run the query
+		$wpdb->query($sql);
+
+		$sql = $wpdb->prepare("
+		CREATE TABLE %1s (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			contract_id BIGINT UNSIGNED NOT NULL,
+			user_id BIGINT UNSIGNED NOT NULL,
+			notes text NOT NULL,
+			status enum('pending','approved','declined') NOT NULL DEFAULT 'pending',
+			action_taken_by BIGINT UNSIGNED NULL,
+			created_at datetime NULL,
+			updated_at datetime NULL,
+
+			FOREIGN KEY (user_id) REFERENCES {$wpdb->prefix}users (ID) ON DELETE CASCADE,
+			FOREIGN KEY (contract_id) REFERENCES {$wpdb->prefix}ap_contracts (ID) ON DELETE CASCADE,
+			FOREIGN KEY (action_taken_by) REFERENCES {$wpdb->prefix}users (ID) ON DELETE SET NULL
+			)
+			", $wpdb->prefix . 'ap_contract_resolution_requests');
 
 		// run the query
 		$wpdb->query($sql);
