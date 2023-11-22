@@ -142,7 +142,7 @@ class Autopublicate_Admin
 			'autopublicate',
 			'Autopublícate® - Contracts',
 			'Contracts',
-			'read',
+			'manage_options',
 			'ap_contracts',
 			array('Autopublicate_Admin', 'route'),
 			2
@@ -152,7 +152,7 @@ class Autopublicate_Admin
 			'autopublicate',
 			'Autopublícate® - Payout Requests',
 			'Payout Requests',
-			'read',
+			'manage_options',
 			'ap_payout_requests',
 			array('Autopublicate_Admin', 'route'),
 			3
@@ -162,7 +162,7 @@ class Autopublicate_Admin
 			'autopublicate',
 			'Autopublícate® - Settings',
 			'Settings',
-			'read',
+			'manage_options',
 			'ap_settings',
 			array('Autopublicate_Admin', 'route'),
 			4
@@ -173,7 +173,7 @@ class Autopublicate_Admin
 			'contracts',
 			'Autopublícate® - Contract View',
 			null,
-			'read',
+			'manage_options',
 			'ap_contract_view',
 			array('Autopublicate_Admin', 'route'),
 			2
@@ -183,7 +183,7 @@ class Autopublicate_Admin
 			'contracts',
 			'Autopublícate® - Contract Resolution',
 			null,
-			'read',
+			'manage_options',
 			'ap_contract_resolution',
 			array('Autopublicate_Admin', 'route'),
 			2
@@ -193,7 +193,7 @@ class Autopublicate_Admin
 			'ap_payout_requests',
 			'Autopublícate® - Payout Request',
 			'Payout Request',
-			'read',
+			'manage_options',
 			'ap_payout_request_view',
 			array('Autopublicate_Admin', 'route'),
 			2
@@ -203,7 +203,7 @@ class Autopublicate_Admin
 			'ap_payout_requests',
 			'Autopublícate® - Payout Request Update',
 			'Payout Request Update',
-			'read',
+			'manage_options',
 			'ap_payout_request_update',
 			array('Autopublicate_Admin', 'route'),
 			2
