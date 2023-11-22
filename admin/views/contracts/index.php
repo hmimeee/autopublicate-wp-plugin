@@ -4,12 +4,13 @@
         <div class="alignleft actions">
             <label class="screen-reader-text" for="filter-by-status">Filter by status</label>
             <select id="filter-by-status" name="status">
-                <option <?= request('status') == '' ? 'selected' : '' ?> value="">All statuses</option>
+                <option <?= request('status') == '' ? 'selected' : '' ?> value="">All</option>
                 <option <?= request('status') == 'pending' ? 'selected' : '' ?> value="pending">Pending</option>
                 <option <?= request('status') == 'approved' ? 'selected' : '' ?> value="approved">Approved</option>
                 <option <?= request('status') == 'inprogress' ? 'selected' : '' ?> value="inprogress">Inprogress</option>
                 <option <?= request('status') == 'delivered' ? 'selected' : '' ?> value="delivered">Delivered</option>
                 <option <?= request('status') == 'completed' ? 'selected' : '' ?> value="completed">Completed</option>
+                <option <?= request('status') == 'refunded' ? 'selected' : '' ?> value="refunded">Refunded</option>
             </select>
         </div>
 

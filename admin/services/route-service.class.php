@@ -62,11 +62,14 @@ class AP_Route_Service
      * @param string $method Controller static method in which function will handle the request
      * @return mixed
      */
-    public function _api(string $path, string $controller, string $method, $public = false)
+    public function _api(string $path, $params, $public = false)
     {
-        add_action('wp_ajax_' . $path, [$controller, $method]);
+        $controller = reset($params);
+        $method = end($params);
 
-        if ($public)
-            add_action('wp_ajax_nopriv_' . $path, [$controller, $method]);
+        if ('wp_ajax_' . $path == request('action')) {
+            $class = new $controller;
+            return $class->$method();
+        }
     }
 }

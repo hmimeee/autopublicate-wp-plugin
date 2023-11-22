@@ -39,14 +39,18 @@ if (!function_exists('ap_file_loader')) {
      * @param string $filePath
      * @return void
      */
-    function ap_file_loader($filePath, $data = [])
+    function ap_file_loader($filePath, $data = [], $isAbsolutePath = false)
     {
-        if (!file_exists(plugin_dir_path(__FILE__) . trim($filePath, '/'))) {
+        if (!file_exists(plugin_dir_path(__FILE__) . trim($filePath, '/')) && !$isAbsolutePath) {
+            throw new Exception('Invalid file', 404);
+        }
+
+        if($isAbsolutePath && !file_exists($filePath)) {
             throw new Exception('Invalid file', 404);
         }
 
         extract($data);
-        require_once plugin_dir_path(__FILE__) . trim($filePath, '/');
+        require_once ($isAbsolutePath ? $filePath : plugin_dir_path(__FILE__) . trim($filePath, '/'));
     }
 }
 
@@ -118,6 +122,16 @@ if (!function_exists('ap_admin_route')) {
     {
         $base_url = admin_url('admin.php');
         $query = http_build_query(array_merge(['page' => 'ap_' . $name], $params));
+
+        return $base_url . '?' . $query;
+    }
+}
+
+if (!function_exists('ap_admin_api_route')) {
+    function ap_admin_api_route($name, $params = [])
+    {
+        $base_url = admin_url('admin-ajax.php');
+        $query = http_build_query(array_merge(['action' => 'wp_ajax_' . $name], $params));
 
         return $base_url . '?' . $query;
     }

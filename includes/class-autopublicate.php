@@ -27,7 +27,8 @@
  * @subpackage Autopublicate/includes
  * @author     Autopublícate® <contact@autopublicate.com>
  */
-class Autopublicate {
+class Autopublicate
+{
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -66,8 +67,9 @@ class Autopublicate {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
-		if ( defined( 'AUTOPUBLICATE_VERSION' ) ) {
+	public function __construct()
+	{
+		if (defined('AUTOPUBLICATE_VERSION')) {
 			$this->version = AUTOPUBLICATE_VERSION;
 		} else {
 			$this->version = '1.0.0';
@@ -78,7 +80,6 @@ class Autopublicate {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
@@ -97,45 +98,46 @@ class Autopublicate {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies() {
+	private function load_dependencies()
+	{
 
 		/**
 		 * The file is responsible for autoloading third parties' packages
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'vendor/autoload.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/autoload.php';
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-autopublicate-loader.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-autopublicate-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-autopublicate-i18n.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-autopublicate-i18n.php';
 
 		/**
 		 * The class responsible for handling all request data.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-autopublicate-request.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-autopublicate-request.php';
 
 		/**
 		 * The class responsible for handling all short codes for the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-autopublicate-short-code.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-autopublicate-short-code.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-autopublicate-admin.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-autopublicate-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-autopublicate-public.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-autopublicate-public.php';
 
 		//Autoload files
 		ap_loader('includes/traits');
@@ -144,7 +146,7 @@ class Autopublicate {
 
 		$this->loader = new ap_loader();
 		new Autopublicate_Short_Code($this->get_plugin_name());
-		add_action( 'elementor/widgets/register', [$this, 'register_elementor_widget'] );
+		add_action('elementor/widgets/register', [$this, 'register_elementor_widget']);
 	}
 
 	/**
@@ -156,12 +158,12 @@ class Autopublicate {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale() {
+	private function set_locale()
+	{
 
 		$plugin_i18n = new Autopublicate_i18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
+		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 	}
 
 	/**
@@ -171,12 +173,13 @@ class Autopublicate {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
+	private function define_admin_hooks()
+	{
 
-		$plugin_admin = new Autopublicate_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Autopublicate_Admin($this->get_plugin_name(), $this->get_version());
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
 		$this->loader->add_action('init', $plugin_admin, 'enqueue_files');
 		$this->loader->add_action('admin_menu', $plugin_admin, 'admin_menu');
 	}
@@ -188,22 +191,22 @@ class Autopublicate {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks() {
+	private function define_public_hooks()
+	{
 
-		$plugin_public = new Autopublicate_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Autopublicate_Public($this->get_plugin_name(), $this->get_version());
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_action( 'template_redirect', $plugin_public, 'enqueue_services');
-
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+		$this->loader->add_action('template_redirect', $plugin_public, 'enqueue_services');
 	}
 
-	public function register_elementor_widget( $widgets_manager ) {
+	public function register_elementor_widget($widgets_manager)
+	{
 
-		require_once( __DIR__ . '/widgets/profile-card.php' );
-	
-		$widgets_manager->register( new Elementor_Profile_Card_Widget() );
-	
+		require_once(__DIR__ . '/widgets/profile-card.php');
+
+		$widgets_manager->register(new Elementor_Profile_Card_Widget());
 	}
 
 	/**
@@ -211,7 +214,8 @@ class Autopublicate {
 	 *
 	 * @since    1.0.0
 	 */
-	public function run() {
+	public function run()
+	{
 		$this->loader->run();
 	}
 
@@ -222,7 +226,8 @@ class Autopublicate {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name() {
+	public function get_plugin_name()
+	{
 		return $this->plugin_name;
 	}
 
@@ -232,7 +237,8 @@ class Autopublicate {
 	 * @since     1.0.0
 	 * @return    ap_loader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader() {
+	public function get_loader()
+	{
 		return $this->loader;
 	}
 
@@ -242,8 +248,8 @@ class Autopublicate {
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version() {
+	public function get_version()
+	{
 		return $this->version;
 	}
-
 }

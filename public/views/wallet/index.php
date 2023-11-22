@@ -27,6 +27,34 @@
         </div>
     </div>
 
+    <?php if (count($payoutRequests)) : ?>
+        <div class="content-page ps-5 pe-5">
+            <h4>Latest Withdraw Requests</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Gateway</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($payoutRequests as $payout) : ?>
+                        <tr>
+                            <td><?= ap_date_format($payout['created_at'], 'Y-m-d') ?></td>
+                            <td><?= ucfirst($payout['gateway']) ?></td>
+                            <td><?= number_format($payout['amount'], 2) ?></td>
+                            <td><?= ucfirst($payout['status']) ?></td>
+                            <td><?= $payout['notes'] ?></td>
+                        </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif ?>
+
     <div class="content-page ps-5 pe-5">
         <h4>Latest Transactions</h4>
         <table class="table">
@@ -41,7 +69,7 @@
             <tbody>
                 <?php foreach ($transactions as $transaction) : ?>
                     <tr>
-                        <td><?= (new DateTime($transaction['date']))->format('Y-m-d') ?></td>
+                        <td><?= ap_date_format($transaction['date'], 'Y-m-d') ?></td>
                         <td><a href="<?= $transaction['contract_id'] ? ap_route('contracts.show', $transaction['contract_id']) : 'javascript:;' ?>" target="_blank"><?= $transaction['description'] ?></a></td>
                         <td><a href="<?= ap_route('user_profile', $transaction['user_login']) ?>" target="_blank"><?= $transaction['from'] ?></a></td>
                         <td class="fw-bold <?= $transaction['type'] == 'addition' ? 'text-success' : 'text-danger' ?>"><?= $transaction['type'] == 'deduction' ? '-' : '' ?>€ <?= number_format($transaction['amount'], 2) ?></td>

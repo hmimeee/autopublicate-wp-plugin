@@ -15,10 +15,11 @@ class AP_Wallet_Controller extends AP_Base_Controller
         global $wpdb;
         $title = 'Wallet';
 
+        $user_id = get_current_user_id();
         $pending = AP_Contract_Model::query()
             ->select()
             ->whereIn('status', ['inprogress', 'delivered'])
-            ->where('provider_id', get_current_user_id())
+            ->where('provider_id', $user_id)
             ->addFieldSum('budget', 'total')
             ->one();
 
@@ -26,18 +27,36 @@ class AP_Wallet_Controller extends AP_Base_Controller
             ->select(['t.id', 't.user_id', 't.description', 't.type', 't.created_at as date', 't.amount', 't.contract_id', 'f.user_login', 'f.display_name as from'])
             ->leftJoin($wpdb->prefix . 'ap_contracts as c', 'c.id', '=', 't.contract_id')
             ->leftJoin($wpdb->prefix . 'users as f', 'f.ID', '=', 't.from_user_id')
-            ->where('user_id', get_current_user_id())
+            ->where('user_id', $user_id)
             ->whereIn('c.status', ['completed', 'cleared', 'refunded'])
             ->orderBy('id', 'desc')
             ->limit(15)
             ->get();
 
-        return $this->view('wallet/index', compact('title', 'transactions', 'pending'));
+        $payoutRequests = AP_Payout_Request_Model::query()
+            ->select()
+            ->where('user_id', $user_id)
+            ->limit(5)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return $this->view('wallet/index', compact('title', 'transactions', 'pending', 'payoutRequests'));
     }
 
     public function payout()
     {
-        $user = AP_User_Model::find(get_current_user_id());
+        $user_id = get_current_user_id();
+        $payoutExists = AP_Payout_Request_Model::query()
+            ->select()
+            ->where('status', 'pending')
+            ->where('user_id', $user_id)
+            ->exists();
+
+        if ($payoutExists) {
+            return $this->redirectWith(ap_route('wallet.index'), 'One of your withdraw request is pending, please wait till that gets cleared', 'error');
+        }
+
+        $user = AP_User_Model::find($user_id);
         if ($user->get('balance') < 10) {
             return $this->redirectWith(ap_route('wallet.index'), 'Not enough amount to withdraw');
         }
@@ -80,17 +99,27 @@ class AP_Wallet_Controller extends AP_Base_Controller
         }
 
         if (request('method') == 'paypal') {
-            $data['gateway_info'] = json_encode([[
+            $data['gateway_info'] = json_encode([
                 'name' => request('paypal_holder'),
                 'email' => request('paypal_email')
-            ]]);
+            ]);
         }
 
-        AP_Payout_Request_Model::query()->insert($data)->execute();
-        
-        AP_User_Model::query()->update([
-            'balance' => 0
-        ])->where('ID', $user->get('ID'))->execute();
+        $payoutId = AP_Payout_Request_Model::query()->insert($data)->execute();
+
+        $adminEmail = get_option('admin_email');
+        $user = AP_User_Model::find($user->get('ID'));
+
+        ap_send_mail($adminEmail, $user->get('user_nicename') . ' has submitted a payout request', [
+            'path' => 'public/views/mails/common',
+            'params' => [
+                'name' => 'Admin',
+                'action' => 'See Details',
+                'action_url' => ap_admin_route('payout_requests', ['payout' => $payoutId]),
+                'body_first' => 'A request to payout has been submitted by ' . $user->get('user_nicename') . '. Please have look on the detail page and make an action regarding this.',
+                'body_second' => 'Please verify the gateway information before sending the amount.'
+            ]
+        ]);
 
         return $this->redirectWith(ap_route('wallet.index'), 'Request submitted successfully');
     }

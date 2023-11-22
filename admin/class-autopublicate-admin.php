@@ -50,7 +50,6 @@ class Autopublicate_Admin
 	 */
 	public function __construct($plugin_name, $version)
 	{
-
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 	}
@@ -62,7 +61,6 @@ class Autopublicate_Admin
 	 */
 	public function enqueue_styles()
 	{
-
 		/**
 		 * This function is provided for demonstration purposes only.
 		 *
@@ -75,8 +73,7 @@ class Autopublicate_Admin
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/autopublicate-admin.css', array(), $this->version, 'all' );
-
+		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/autopublicate-admin.css', array(), $this->version, 'all');
 	}
 
 	/**
@@ -119,6 +116,8 @@ class Autopublicate_Admin
 		if (strpos($_SERVER['REQUEST_URI'], 'wp-admin')) {
 			ap_loader('admin/controllers');
 			ap_loader('admin/services');
+
+			require plugin_dir_path(__DIR__) . 'admin/routes/api.php';
 		}
 	}
 
@@ -141,16 +140,6 @@ class Autopublicate_Admin
 
 		add_submenu_page(
 			'autopublicate',
-			'Autopublícate® - Dashboard',
-			'Dashboard',
-			'read',
-			'ap_dashboard',
-			array('Autopublicate_Admin', 'route'),
-			1
-		);
-
-		add_submenu_page(
-			'autopublicate',
 			'Autopublícate® - Contracts',
 			'Contracts',
 			'read',
@@ -161,12 +150,22 @@ class Autopublicate_Admin
 
 		add_submenu_page(
 			'autopublicate',
+			'Autopublícate® - Payout Requests',
+			'Payout Requests',
+			'read',
+			'ap_payout_requests',
+			array('Autopublicate_Admin', 'route'),
+			3
+		);
+
+		add_submenu_page(
+			'autopublicate',
 			'Autopublícate® - Settings',
 			'Settings',
 			'read',
 			'ap_settings',
 			array('Autopublicate_Admin', 'route'),
-			3
+			4
 		);
 
 
@@ -186,6 +185,26 @@ class Autopublicate_Admin
 			null,
 			'read',
 			'ap_contract_resolution',
+			array('Autopublicate_Admin', 'route'),
+			2
+		);
+
+		add_submenu_page(
+			'ap_payout_requests',
+			'Autopublícate® - Payout Request',
+			'Payout Request',
+			'read',
+			'ap_payout_request_view',
+			array('Autopublicate_Admin', 'route'),
+			2
+		);
+
+		add_submenu_page(
+			'ap_payout_requests',
+			'Autopublícate® - Payout Request Update',
+			'Payout Request Update',
+			'read',
+			'ap_payout_request_update',
 			array('Autopublicate_Admin', 'route'),
 			2
 		);

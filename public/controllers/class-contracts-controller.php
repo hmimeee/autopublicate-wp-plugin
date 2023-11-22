@@ -501,9 +501,9 @@ class AP_Contracts_Controller extends AP_Base_Controller
             'params' => [
                 'name' => 'Admin',
                 'action' => 'See Details',
-                'action_url' => ap_route('contracts.show', $contractId),
+                'action_url' => ap_admin_route('contract_view', ['contract' => $contractId]),
                 'body_first' => 'A request to resolution the contract has been submitted by ' . $user->get('user_nicename') . '. Please have look on the detail page and make an action regarding this.',
-                'body_second' => 'Please take a loon the activities part before making a decision.'
+                'body_second' => 'Please take a look on the activities part before making a decision.'
             ]
         ]);
         

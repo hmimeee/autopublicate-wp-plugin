@@ -129,6 +129,7 @@ class Autopublicate_Activator
 			gateway varchar(100) NOT NULL,
 			gateway_info text NOT NULL,
 			status enum('pending','processing','sent','cancelled') NOT NULL DEFAULT 'pending',
+			notes text NULL,
 			created_at datetime NULL,
 			updated_at datetime NULL,
 

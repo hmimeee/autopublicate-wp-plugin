@@ -28,6 +28,10 @@ class AP_Contract_Controller extends AP_Base_Controller
             });
         }
 
+        if (request('status')) {
+            $query->where('c.status', request('status'));
+        }
+
         $contracts = paginate($query, request('page_number', 1));
 
         return $this->view('contracts/index', compact('contracts'));
