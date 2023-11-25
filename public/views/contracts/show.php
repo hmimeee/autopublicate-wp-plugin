@@ -153,7 +153,7 @@
                             </form>
                         <?php endif ?>
 
-                        <?php if ($progressSequences[$contract['status']] > 2 && !$resolution) : ?>
+                        <?php if ($progressSequences[$contract['status']] > 3 && !$resolution) : ?>
                             <hr />
                             <div class="text-center">
                                 <a class="btn btn-sm fw-bold btn-primary" title="Resolution" href="javascript:;" data-bs-toggle="modal" data-bs-target="#contract-resolution-modal"><i class="fa fa-exclamation-circle"></i> Resolution</a></li>
